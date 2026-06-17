@@ -19,8 +19,11 @@ install — and to get updates by pulling — is via the plugin system. In Claud
 Code, first register the marketplace:
 
 ```
-/plugin marketplace add <this-repo-url>
+/plugin marketplace add ssh://git@gitlab.ci.csc.fi:10022/soda/csc-skills.git
 ```
+
+(HTTPS alternative if you don't have SSH set up on CSC GitLab:
+`/plugin marketplace add https://gitlab.ci.csc.fi/soda/csc-skills.git`.)
 
 Then install either the **bundle** (all CSC skills) or just **one** skill:
 
