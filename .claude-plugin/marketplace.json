@@ -1,0 +1,14 @@
+{
+  "name": "csc-skills",
+  "owner": {
+    "name": "Sam Hardwick",
+    "email": "sam.hardwick@csc.fi"
+  },
+  "plugins": [
+    {
+      "name": "csc-skills",
+      "source": "./",
+      "description": "Skills for using CSC infrastructure (Allas object storage, and more to come) correctly and safely."
+    }
+  ]
+}

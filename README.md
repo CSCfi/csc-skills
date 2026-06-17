@@ -14,25 +14,55 @@ streamlined way. Each subdirectory is a self-contained skill.
 
 ## Installing
 
-Skills are discovered from `~/.claude/skills/`. To install all skills from this
-repo for your user:
+This repo is a Claude Code **plugin marketplace**. The recommended way to
+install — and to get updates by pulling — is via the plugin system. In Claude
+Code:
+
+```
+/plugin marketplace add <this-repo-url>
+/plugin install csc-skills@csc-skills
+```
+
+(After the marketplace is added, `/plugin` also lets you browse and toggle it
+interactively.) Updating is `git pull` in the marketplace checkout, or
+re-running `/plugin marketplace add` to refresh.
+
+### Manual install (without the plugin system)
+
+Skills are also discovered from `~/.claude/skills/`. To install them for your
+user without the plugin system:
 
 ```bash
-cp -r csc-* ~/.claude/skills/
+cp -r skills/csc-* ~/.claude/skills/
 ```
 
 Or symlink an individual skill so it tracks the repo:
 
 ```bash
-ln -s "$PWD/csc-allas" ~/.claude/skills/csc-allas
+ln -s "$PWD/skills/csc-allas" ~/.claude/skills/csc-allas
 ```
 
-Then ask Claude Code something the skill covers (e.g. "upload this result to an
-Allas bucket") and it will pick the skill up automatically.
+Either way, ask Claude Code something a skill covers (e.g. "upload this result
+to an Allas bucket") and it will pick the skill up automatically.
+
+## Layout
+
+```
+csc-skills/
+├── .claude-plugin/
+│   ├── plugin.json        # plugin manifest
+│   └── marketplace.json   # marketplace manifest (lists this plugin)
+├── README.md
+└── skills/
+    └── csc-allas/         # one directory per skill
+        ├── SKILL.md
+        └── references/
+```
 
 ## Contributing
 
-Each skill is a directory with a `SKILL.md` (YAML frontmatter `name` +
-`description`, then the body) and optional `references/*.md` files loaded on
-demand. CSC-specific facts should be sourced from the
-[CSC user guide](https://docs.csc.fi/).
+Add a skill as a new directory under `skills/` with a `SKILL.md` (YAML
+frontmatter `name` + `description`, then the body) and optional `references/*.md`
+files loaded on demand. The plugin auto-discovers everything under `skills/`, so
+no manifest edits are needed for a new skill. CSC-specific facts should be
+sourced from the [CSC user guide](https://docs.csc.fi/).
