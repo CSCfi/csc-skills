@@ -7,8 +7,13 @@
   "plugins": [
     {
       "name": "csc-skills",
-      "source": "./",
-      "description": "Skills for using CSC infrastructure (Allas object storage, and more to come) correctly and safely."
+      "source": "./plugins/csc-skills",
+      "description": "All CSC infrastructure skills (currently: csc-allas)."
+    },
+    {
+      "name": "csc-allas",
+      "source": "./plugins/csc-allas",
+      "description": "Just the Allas object storage skill."
     }
   ]
 }

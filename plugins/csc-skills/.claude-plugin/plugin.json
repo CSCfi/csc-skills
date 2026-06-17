@@ -1,0 +1,9 @@
+{
+  "name": "csc-skills",
+  "description": "Bundle of all CSC infrastructure skills (currently: csc-allas). Install this to get everything; install an individual plugin (e.g. csc-allas) for just one skill.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Sam Hardwick",
+    "email": "sam.hardwick@csc.fi"
+  }
+}
