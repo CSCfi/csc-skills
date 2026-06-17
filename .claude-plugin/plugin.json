@@ -1,0 +1,9 @@
+{
+  "name": "csc-skills",
+  "description": "Claude Code skills for using CSC infrastructure (Allas object storage, and more to come) correctly, safely, and in a streamlined way.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Sam Hardwick",
+    "email": "sam.hardwick@csc.fi"
+  }
+}

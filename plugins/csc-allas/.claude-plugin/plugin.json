@@ -1,9 +1,0 @@
-{
-  "name": "csc-allas",
-  "description": "Use Allas, CSC's object storage, correctly and safely: generates code/scripts (boto3, aws-cli, s3cmd, rclone) and advises on the mechanics. Defaults to S3; does not run destructive Allas operations on your behalf.",
-  "version": "0.1.0",
-  "author": {
-    "name": "Sam Hardwick",
-    "email": "sam.hardwick@csc.fi"
-  }
-}
