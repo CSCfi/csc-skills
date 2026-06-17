@@ -7,8 +7,8 @@ description: >
   (buckets, CSC projects, public/private access, ACLs, bucket policies,
   lifecycle, S3 vs Swift, a3s.fi). Also use for the common case "at the end of
   this workflow, upload the result to such-and-such Allas bucket". Generates
-  code/scripts (boto3, aws-cli, s3cmd) but does NOT itself run mutating or
-  destructive Allas operations.
+  code/scripts (boto3, aws-cli, s3cmd, rclone) but does NOT itself run mutating
+  or destructive Allas operations.
 ---
 
 # CSC Allas object storage
@@ -77,8 +77,14 @@ Allas bucket X with naming scheme Y."* Steps:
    the user's scheme into an explicit pattern (e.g.
    `runs/{date}/{sample}-{metric}.tar.zst`) and use pseudo-folders (`/` in the
    key) for structure.
-2. **Pick the language** to match the surrounding workflow: Python → `boto3`;
-   shell/batch job → `aws-cli` or `s3cmd`. Default S3 per rule 1.
+2. **Pick the tool** to match the surrounding workflow, all over S3 (rule 1):
+   - Python in-process → `boto3`.
+   - Shell / batch job, single objects or ad-hoc → `aws-cli` or `s3cmd`.
+   - Bulk directory transfers (whole result dirs, many files) → **`rclone`**.
+     It's usually preinstalled on Puhti/Mahti, handles directories and resumes
+     well, and is often the smoothest choice — use remote `s3allas:` for S3.
+     Caveat: don't use rclone to copy/move *inside* Allas (mishandles >5 GB
+     objects), and `rclone sync` deletes at the destination (see rule 2).
 3. **Generate the code** from `references/code-patterns.md`. For Python boto3,
    always include the two checksum env vars and `endpoint_url='https://a3s.fi'`.
 4. **Handle credentials out-of-band** — the code assumes the project's S3
