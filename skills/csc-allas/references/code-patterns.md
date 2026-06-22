@@ -184,14 +184,24 @@ s3cmd signurl s3://my-bucket/object +3600     # valid 1 hour
 ```xml
 <?xml version="1.0" ?>
 <LifecycleConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+   <!-- by prefix (pseudo-folder) -->
    <Rule>
       <ID>expire-daily</ID>
       <Status>Enabled</Status>
       <Prefix>daily/</Prefix>
       <Expiration><Days>30</Days></Expiration>
    </Rule>
+   <!-- by tag (matches objects PUT with x-amz-tagging:days=1) -->
+   <Rule>
+      <ID>expire-tagged-1d</ID>
+      <Status>Enabled</Status>
+      <Filter><Tag><Key>days</Key><Value>1</Value></Tag></Filter>
+      <Expiration><Days>1</Days></Expiration>
+   </Rule>
 </LifecycleConfiguration>
 ```
+
+Prefix and tag can be combined within one rule using an `<And>` block.
 
 ```bash
 s3cmd setlifecycle policy.xml s3://my-bucket

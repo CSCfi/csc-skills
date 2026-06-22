@@ -55,8 +55,21 @@ S3 connection details for tools without `allas-conf`:
   **S3** (long-term protocol, simpler for automation), except when a bucket is
   already Swift-managed or the user asks for Swift.
 - **Never mix protocols on the same object/bucket.** For small objects the two
-  are interchangeable, but objects over ~5 GB are split and become readable
-  **only** via the protocol that wrote them.
+  are interchangeable, but large objects are split and become readable **only**
+  via the protocol that wrote them. The split threshold depends on the tool and
+  protocol — **typically 500 MB–5 GB** (so don't assume it's safe to mix even
+  below 5 GB).
+- **Clients are protocol-specific:** `s3cmd` and `aws-cli` are **S3-only**;
+  `python-swiftclient` (`swift`) is **Swift-only**; `rclone`, `a-commands`
+  (`a-put`/`a-get`, Swift-based) and Cyberduck speak both. Pick a client that
+  matches the bucket's protocol.
+
+### Sensitive data
+
+Allas is not intended for sensitive personal data unless it is **client-side
+encrypted**. For sensitive data, use **SD Connect** (`https://sd-connect.csc.fi`)
+or a client that does client-side encryption (see the upstream
+`allas_encryption.md`); plain S3/Swift uploads are not sufficient.
 
 ## Buckets, objects, naming
 
@@ -133,11 +146,16 @@ so transfer-heavy workflows are fine.
 | `NoSuchBucket` (404) | Bucket doesn't exist (or not visible to this project) |
 | `AccessDenied` (403) | Credentials can't see/use the bucket |
 | `QuotaExceeded` (403) | Hit the project quota — request increase from servicedesk |
-| `EntityTooLarge` (400) / `Too Large Object` | File too big / hit 500 000-objects-per-bucket limit |
+| `EntityTooLarge` (400) | The file is too large (see large-object splitting above) |
+| `Too Large Object` | Hit the project quota (default 10 TiB) or the 500 000-objects-per-bucket limit |
 
 ## Backups
 
 Allas survives disk/server failure but **not** accidental deletion. It is not a
 backup service. Recommend the user keep independent backups of anything
-important; `allas-backup` (an a-command) only copies to another Allas bucket
-that's equally deletable.
+important. `allas-backup` is a CLI wrapper around [restic](https://restic.readthedocs.io/)
+that keeps a project-specific, deduplicated, **versioned/incremental** backup
+repository — handy for cumulative backups (only changed data is re-stored). But
+the repository lives in a **single Allas bucket** that any authenticated project
+member can delete in one command, so it is **not** off-site and not a substitute
+for a real backup service.

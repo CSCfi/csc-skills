@@ -39,7 +39,7 @@ quota and billing.
 ## Flavors
 
 Naming: `<family>.<size>` (e.g. `standard.small`, `hpc.6.14core`, `io.160GB`,
-`gpu.1.1`). Pick by workload:
+`gpu.1.1gpu`). Pick by workload:
 
 - **`standard.*`** — general use. CPU cores are **overcommitted** (not for
   sustained compute). Root disk on central (redundant) storage; can be
@@ -47,7 +47,8 @@ Naming: `<family>.<size>` (e.g. `standard.small`, `hpc.6.14core`, `io.160GB`,
   to `standard.3xlarge` (8 cores, 62 GiB).
 - **`hpc.*`** — compute-intensive. **No CPU overcommit.** Tied to hardware;
   lower availability, expect maintenance downtime. (`hpc.4` Intel, `hpc.5`/`hpc.6`
-  AMD EPYC.)
+  AMD EPYC.) Note `hpc.4` on **cPouta has no redundant power** (a power fault can
+  make it temporarily unreachable); on ePouta `hpc.4` is power-redundant.
 - **`io.*`** — disk-intensive (databases, Spark/Hadoop). Large **ephemeral**
   SSD/NVMe disk, usually at `/dev/vdb`. Older `io.*` = RAID-0 (no redundancy),
   no power redundancy; newer `io.2.*` = RAID-1 + power redundancy. Can't migrate
