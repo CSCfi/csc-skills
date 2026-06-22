@@ -111,6 +111,10 @@ the mechanics, with the CSC-specific quirks built in.
   ePouta, it's the private VPN IP instead.
 - **"Stop paying for it."** Recommend **shelve** (stops billing) over stop;
   or delete (with boot-from-volume so data survives).
+- **"What will this cost?"** Use the indicative BU/h rate table in
+  `concepts.md` for a ballpark (VM + volumes + floating IPs, billed hourly),
+  but point the user at the BU calculator (https://research.csc.fi/resources/#buc)
+  for budgeting — the table is reference-only and rates can change.
 
 ## Reference material
 

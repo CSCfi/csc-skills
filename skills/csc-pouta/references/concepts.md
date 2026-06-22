@@ -61,16 +61,66 @@ Use the BU calculator: https://research.csc.fi/resources/#buc
 
 ## Billing — what costs and what stops it
 
-- Running VM: per-flavor Cloud BU/hour (1-hour increments).
-- **A shut-off or suspended VM still bills** — its resources stay reserved.
-- **Shelving** a VM frees the compute resources and **stops its billing**.
-- Volumes bill per TiB/hour (Standard ~3.6 BU/TiB/h, Capacity ~1.8). Floating
-  IPs bill ~0.2 BU/h **even when not associated**.
-- A VM stuck in **error** state still bills — contact servicedesk if unrecoverable.
+Three resources bill, all in **Cloud Billing Units (BU)** and in **1-hour
+increments**:
 
-Cost-saving patterns: shelve idle VMs (not just stop); **boot from volume** so
-you can delete the VM (cheap volume persists) and recreate later; automate
-provisioning (Heat/Terraform/Ansible) to tear down and rebuild on demand.
+- **VMs** — per-flavor BU/h (table below). **A shut-off or suspended VM still
+  bills** (resources stay reserved); a VM stuck in **error** also bills.
+  **Shelving** frees the compute and **stops the VM's billing**.
+- **Volumes** — **3.6 BU/TiB·h** (Standard) or **1.8** (Capacity), on the full
+  allocated size, **whether or not attached**.
+- **Floating IPs** — **0.2 BU/h each**, **even when not associated**. The
+  project's default router is free; extra routers you attach to the external
+  network bill as a floating IP.
+
+### Indicative flavor rates (BU/h)
+
+> These are reference figures for **ballpark estimates only** and can change —
+> for budgeting, confirm with the **BU calculator**
+> (https://research.csc.fi/resources/#buc) and your project's live balance, and
+> check live flavor specs with `openstack flavor list`. Figures below are
+> **cPouta**; ePouta differs (see notes). Memory values are approximate.
+
+**Standard** (cPouta and ePouta identical):
+
+| Flavor | Cores | RAM (GiB) | BU/h |
+|---|---|---|---|
+| standard.tiny | 1 | 0.9 | 0.26 |
+| standard.small | 2 | 1.9 | 0.52 |
+| standard.medium | 3 | 3.9 | 1.05 |
+| standard.large | 4 | 7.8 | 2.10 |
+| standard.xlarge | 6 | 15 | 4.20 |
+| standard.xxlarge | 8 | 31 | 8.40 |
+| standard.3xlarge | 8 | 62 | 16.80 |
+
+**HPC** (cPouta): hpc.4.5core 6 · hpc.4.80core 100; hpc.5.16core 20 ·
+hpc.5.128core 160; hpc.6.14core 23 · hpc.6.112core 180. *(ePouta runs a bit
+higher, e.g. hpc.6.14core 25, hpc.4.80core 120.)*
+
+**I/O** (cPouta): io.70GB 3.15 · io.160GB 6.30 · io.340GB 12.60 · io.700GB
+25.20; io.2.80GB 6 · io.2.240GB 12 · io.2.550GB 24 · io.2.1200GB 48. *(ePouta
+io.2.* slightly higher: 6.30 / 12.60 / 25 / 50.)*
+
+**GPU** (cPouta): gpu.1.1gpu 60 · gpu.1.2gpu 120 · gpu.1.4gpu 240. *(ePouta adds
+gpu.2.1gpu 100 (V100) and gpu.3.1gpu 150 (A100).)*
+
+**High memory** (ePouta only): tb.3.480RAM 110 · tb.3.1470RAM 320.
+
+### Estimating
+
+Cost ≈ Σ (resource rate × hours). A month running 24/7 ≈ **720 h**. Example —
+a `standard.medium` VM up all month, with a 100 GB Standard volume and one
+floating IP:
+
+- VM: 1.05 × 720 ≈ **756 BU**
+- Volume: 0.1 TiB × 3.6 × 720 ≈ **259 BU**
+- Floating IP: 0.2 × 720 ≈ **144 BU**
+- **≈ 1 159 BU/month** (the calculator converts BU↔€ and shows your balance).
+
+Cost-saving patterns: **shelve** idle VMs (stop still bills); **boot from
+volume** so you can delete the VM (only the cheaper volume persists) and
+recreate later; release floating IPs you aren't using; automate provisioning
+(Heat/Terraform/Ansible) to tear down and rebuild on demand.
 
 ## VM lifecycle
 
