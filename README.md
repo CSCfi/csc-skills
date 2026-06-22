@@ -12,6 +12,14 @@ streamlined way. Each subdirectory is a self-contained skill.
   lifecycle, S3 vs Swift). Defaults to S3, and does not run destructive Allas
   operations on your behalf.
 
+- **csc-pouta** — use [Pouta](https://docs.csc.fi/cloud/pouta/), CSC's OpenStack
+  IaaS cloud (cPouta, plus ePouta for sensitive data). Generates code/scripts
+  (openstack CLI, openstacksdk, Heat/Terraform) for launching and managing VMs,
+  volumes, snapshots, images, networking, security groups and SSH access;
+  advises on the mechanics (CSC projects/tenants, flavors, billing & shelving,
+  ephemeral vs persistent storage, application credentials). Does not run
+  resource-creating or destructive OpenStack operations on your behalf.
+
 ## Installing
 
 This repo is a Claude Code **plugin marketplace**. The recommended way to

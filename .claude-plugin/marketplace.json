@@ -8,7 +8,7 @@
     {
       "name": "csc-skills",
       "source": "./",
-      "description": "Skills for using CSC infrastructure (Allas object storage, and more to come) correctly and safely."
+      "description": "Skills for using CSC infrastructure (Allas object storage, Pouta cloud) correctly and safely."
     }
   ]
 }
