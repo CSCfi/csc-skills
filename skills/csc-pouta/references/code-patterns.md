@@ -1,7 +1,9 @@
 # Pouta code patterns
 
-Adapt to the user's task. Generate code; don't run resource-creating/destructive
-commands yourself (see SKILL.md rule 1). Never hard-code or echo credentials.
+Adapt to the user's task. Per SKILL.md rule 1: creating resources may be run
+(after disclosing cost and network exposure); modifying or deleting existing
+resources is written as a reviewable script, not run. Never hard-code or echo
+credentials.
 
 cPouta identity endpoint: `https://pouta.csc.fi:5001/v3` (Keystone v3),
 region `regionOne`, user domain `Default`. For **ePouta**, use the values from
@@ -81,7 +83,8 @@ for s in conn.compute.servers():
     print(s.name, s.status)
 ```
 
-Launch a VM in Python (generate as code; the user runs it):
+Launch a VM in Python (creation — OK to run after disclosing flavor/cost and
+SSH exposure, per rule 1):
 
 ```python
 import openstack

@@ -17,8 +17,9 @@ streamlined way. Each subdirectory is a self-contained skill.
   (openstack CLI, openstacksdk, Heat/Terraform) for launching and managing VMs,
   volumes, snapshots, images, networking, security groups and SSH access;
   advises on the mechanics (CSC projects/tenants, flavors, billing & shelving,
-  ephemeral vs persistent storage, application credentials). Does not run
-  resource-creating or destructive OpenStack operations on your behalf.
+  ephemeral vs persistent storage, application credentials). Can create
+  resources with clear disclosure of cost/exposure, but does not modify or
+  delete existing OpenStack resources on your behalf.
 
 ## Installing
 

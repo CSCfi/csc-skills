@@ -8,9 +8,9 @@ description: >
   the openstack CLI or openstacksdk, or asks about Pouta concepts (cPouta vs
   ePouta, CSC projects/tenants, flavors, billing, VM lifecycle/shelving,
   ephemeral vs persistent storage). Covers cPouta (the common case) and answers
-  ePouta (sensitive-data cloud) questions. Generates code/scripts but does NOT
-  itself run resource-creating, state-changing, or destructive OpenStack
-  operations.
+  ePouta (sensitive-data cloud) questions. Can create resources (with clear
+  disclosure of cost and network exposure) but does NOT itself modify or delete
+  existing resources — it writes reviewable code/scripts for those.
 ---
 
 # CSC Pouta (OpenStack IaaS)
@@ -33,39 +33,45 @@ the mechanics, with the CSC-specific quirks built in.
 
 ## Operating rules (read first)
 
-1. **Do not run resource-creating, state-changing, or destructive OpenStack
-   operations yourself.** This skill *writes* code and scripts; the user runs
-   them. Pouta resources **cost billing units** and several operations **destroy
-   data**, so the bar is higher than read-only tooling.
+1. **Creating resources is fine — with clear disclosure. Modifying or deleting
+   existing resources is the avoid-zone.** This skill can provision; it should
+   not quietly change or tear down what already exists. Three tiers:
 
-   - **You may run, on request: read-only inspection** — e.g.
-     `openstack server list`, `... flavor list`, `... image list`,
-     `... volume list`, `... network list`, `... security group list`,
-     `... server show <x>`, `... catalog list`, `... quota show`,
-     `... limits show`.
-   - **You must NOT independently run** anything that creates, modifies,
-     reboots, resizes, deletes, or re-permissions resources:
-     `server create/delete/reboot/resize/shelve/stop`, `volume
-     create/delete/set`, `server add/remove volume`, `floating ip
-     create/delete/...`, `security group rule create/delete`, image
-     create/delete, etc.
+   - **Read-only inspection** — always OK to run on request:
+     `openstack server/flavor/image/volume/network/security group list`,
+     `server show`, `catalog list`, `quota show`, `limits show`.
+   - **Creating new resources** — OK to run, *after* you state plainly what
+     you're about to create and the user gives a go-ahead. Two things you must
+     always disclose up front:
+     - **Cost.** VMs, volumes and floating IPs bill (see `concepts.md`) — name
+       the flavor/size and give a rough BU/h so the user isn't surprised.
+     - **Network exposure.** When creating a security group or rule, say which
+       ports open to which sources, and **never open SSH/22 (or anything) to
+       `0.0.0.0/0` unless the user explicitly asks** — default to a restricted
+       source CIDR.
+     Examples: `server create`, `volume create`, `network`/`router create`,
+     `security group create`, `keypair create`, allocating + associating a
+     `floating ip`, attaching a *newly created* volume.
+   - **Modifying or deleting existing resources** — do NOT run on your own;
+     **write a reviewable script** and let the user run it. This covers anything
+     that changes or removes something already there: `server
+     delete/reboot/stop/start/shelve/resize`, `volume delete`, `volume set`
+     (resize/retype), `server remove volume` (detach), reformatting a volume
+     that holds data, editing/deleting security-group rules on a group in use,
+     reassigning a floating IP, changing image sharing/properties.
 
-   If the user explicitly asks you to perform one of those:
-   - State plainly and specifically what it does — which resource, and call out
-     **billing** and **data loss**. The sharp edges:
-     - `server delete` / terminate — **irreversibly destroys the VM and its
-       ephemeral disk** (attached persistent volumes survive). Unrecoverable.
-     - `volume delete`, and `mkfs`/first-use formatting of an already-used
-       volume — **destroys data**.
-     - Detaching a volume without unmounting first — risks corruption.
-     - `server resize` across flavor families — risky, can fail or lose data.
-     - A security-group rule opening a port (especially SSH/22) to
-       `0.0.0.0/0` — exposes the VM to the whole internet.
-     - Remember **every project member shares full access** to all resources,
-       so a deletion affects everyone.
-   - Offer to **write a reviewable script** instead. Prefer that.
-   - Only run it if the user, after that, clearly confirms — and never a
-     `server delete` / `volume delete` / bulk teardown on your own initiative.
+   When asked to do something in the avoid-zone, state plainly and specifically
+   what it does and call out the sharp edges before writing the script:
+   - `server delete` / terminate — **irreversibly destroys the VM and its
+     ephemeral disk** (attached persistent volumes survive). Unrecoverable.
+   - `volume delete`, or `mkfs`/first-use formatting of an already-used volume —
+     **destroys data**.
+   - Detaching a volume without unmounting first — risks corruption.
+   - `server resize` across flavor families — risky, can fail or lose data.
+   - **Every project member shares full access**, so a deletion affects everyone.
+   Only run such an operation if the user, after that, clearly confirms — and
+   never a `server delete` / `volume delete` / bulk teardown on your own
+   initiative.
 
 2. **A CSC project is the OpenStack tenant — the namespace for everything.** All
    VMs, volumes, networks, floating IPs, images, keypairs and quota belong to
@@ -100,9 +106,10 @@ the mechanics, with the CSC-specific quirks built in.
   Ubuntu→`ubuntu`, AlmaLinux→`almalinux`, CentOS→`cloud-user`), which
   **keypair**, which **security group** (and which source IPs may reach SSH),
   and whether to **boot from a volume** (so the root disk persists and the VM
-  can be deleted to stop billing cheaply). Then generate the
-  `openstack server create` (or openstacksdk / Heat / Terraform) code from
-  `references/code-patterns.md`.
+  can be deleted to stop billing cheaply). Then — after stating the flavor, a
+  rough BU/h, and which sources reach SSH — either run the `openstack server
+  create` (rule 1 allows creation) or generate the openstacksdk / Heat /
+  Terraform equivalent from `references/code-patterns.md`.
 - **"Give it persistent storage."** Generate volume create + attach, and the
   one-time format/mount steps (with the "only on first use" warning).
 - **"Open port N"** / firewall — generate the security-group rule, and default
