@@ -1,0 +1,9 @@
+# Local cache of upstream CSC docs (scripts/sync-upstream.sh) — never committed
+.upstream/
+
+# Never commit CSC credentials (skills tell users to create these)
+clouds.yaml
+secure.yaml
+*-openrc.sh
+.s3cfg
+.aws/
