@@ -30,6 +30,7 @@ Which upstream docs back which skill:
 |---|---|
 | `csc-allas` | `docs/data/Allas/` |
 | `csc-pouta` | `docs/cloud/pouta/` (plus `docs/accounts/` for CSC-project/quota facts) |
+| `csc-rahti` | `docs/cloud/rahti/` (plus `docs/accounts/` for CSC-project/quota facts) |
 
 Rules:
 - **Prefer the upstream docs over memory.** If they're silent on a detail, say

@@ -21,6 +21,17 @@ streamlined way. Each subdirectory is a self-contained skill.
   resources with clear disclosure of cost/exposure, but does not modify or
   delete existing OpenStack resources on your behalf.
 
+- **csc-rahti** — use [Rahti](https://docs.csc.fi/cloud/rahti/), CSC's container
+  cloud (OpenShift/OKD, a Kubernetes-based PaaS). Generates manifests and `oc`
+  commands for deploying and running containerised apps — pods, deployments,
+  services, routes, jobs, persistent volumes (PVC) and snapshots — building and
+  pushing images to the integrated registry (BuildConfig, S2I, `oc new-app`),
+  custom domains/TLS/IP allowlists, and project/quota setup; advises on the
+  mechanics (OpenShift vs Kubernetes, the non-root multi-tenant security model,
+  `*.rahtiapp.fi` routes, billing). Can create resources with clear disclosure
+  of cost (BU) and public exposure, but does not modify or delete existing
+  Rahti resources on your behalf.
+
 ## Installing
 
 This repo is a Claude Code **plugin marketplace**. The recommended way to
