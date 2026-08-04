@@ -21,6 +21,16 @@ streamlined way. Each subdirectory is a self-contained skill.
   resources with clear disclosure of cost/exposure, but does not modify or
   delete existing OpenStack resources on your behalf.
 
+- **csc-roihu** — use [Roihu](https://docs.csc.fi/computing/systems-roihu/),
+  CSC's national supercomputer (successor to Puhti and Mahti). Generates Slurm
+  job scripts (CPU and GH200 GPU partitions), SSH-certificate setup (24 h
+  certificates via MyCSC or the certificate helper tool), data-transfer and
+  software-install recipes; advises on the mechanics (the x86/ARM
+  architecture split, partitions and billing units, disk areas and quotas,
+  Lustre vs node-local NVMe, login-node policy and HPC etiquette). Runs
+  read-only inspection and submits jobs only with cost disclosure; does not
+  delete data or cancel/modify existing jobs on your behalf.
+
 - **csc-rahti** — use [Rahti](https://docs.csc.fi/cloud/rahti/), CSC's container
   cloud (OpenShift/OKD, a Kubernetes-based PaaS). Generates manifests and `oc`
   commands for deploying and running containerised apps — pods, deployments,

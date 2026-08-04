@@ -31,6 +31,7 @@ Which upstream docs back which skill:
 | `csc-allas` | `docs/data/Allas/` |
 | `csc-pouta` | `docs/cloud/pouta/` (plus `docs/accounts/` for CSC-project/quota facts) |
 | `csc-rahti` | `docs/cloud/rahti/` (plus `docs/accounts/` for CSC-project/quota facts) |
+| `csc-roihu` | `docs/computing/` (esp. `systems-roihu.md`, `roihu-disk.md`, `running/`, `connecting/`, `usage-policy.md`, `lustre.md`, `hpc-billing.md`) plus `docs/support/tutorials/roihu*.md`; also two external repos: <https://github.com/CSCfi/certificate-helper-tool> (SSH certs) and <https://github.com/csc-training/csc-env-eff> (HPC practices) |
 
 Rules:
 - **Prefer the upstream docs over memory.** If they're silent on a detail, say

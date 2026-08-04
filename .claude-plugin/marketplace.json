@@ -8,7 +8,7 @@
     {
       "name": "csc-skills",
       "source": "./",
-      "description": "Skills for using CSC infrastructure (Allas object storage, Pouta cloud, Rahti container cloud) correctly and safely."
+      "description": "Skills for using CSC infrastructure (Allas object storage, Pouta cloud, Rahti container cloud, Roihu supercomputer) correctly and safely."
     }
   ]
 }

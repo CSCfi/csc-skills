@@ -1,6 +1,6 @@
 {
   "name": "csc-skills",
-  "description": "Claude Code skills for using CSC infrastructure (Allas object storage, Pouta cloud, Rahti container cloud) correctly, safely, and in a streamlined way.",
+  "description": "Claude Code skills for using CSC infrastructure (Allas object storage, Pouta cloud, Rahti container cloud, Roihu supercomputer) correctly, safely, and in a streamlined way.",
   "version": "0.1.0",
   "author": {
     "name": "Sam Hardwick",
