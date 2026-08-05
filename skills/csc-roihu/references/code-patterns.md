@@ -272,7 +272,7 @@ mpicc  -O3 -march=znver5 example.c -o example
 module load aocc/5.0.0 openmpi/5.0.10        # AMD suite (clang/flang)
 
 # GPU side (roihu-gpu): GNU + CUDA, or NVIDIA HPC SDK
-module load gcc/15.2.0 cuda/13.1.1 openmpi/5.0.8 openblas/0.3.30
+module load gcc/15.2.0 cuda/13.1.1 openmpi/5.0.10 openblas/0.3.30
 nvcc -gencode arch=compute_90a,code=sm_90a example.cu   # Hopper-only, fastest
 #    arch=compute_90,code=sm_90 for portable cc9.0
 

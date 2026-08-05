@@ -14,7 +14,7 @@ budget- or deadline-critical against docs.csc.fi.
 | M    | 414 | AMD Turin 9965 | 2×192 (x86) @ 2.25 GHz | 768 GiB | 0.96 TB |
 | L    | 72  | AMD Turin 9965 | 2×192 (x86) @ 2.25 GHz | 1536 GiB | 0.96 TB |
 | XL (hugemem) | 4 | AMD Turin 9555 | 2×64 (x86) @ 3.20 GHz | 6144 GiB | 15.36 TB |
-| V (viz) | 4 | AMD Turin 9335 + 2× Nvidia L40 | 2×32 (x86) | 384 GiB + 2×48 GiB | 15.36 TB |
+| V (viz) | 4 | AMD Turin 9335 + 2× Nvidia L40 | 2×32 (x86) | 384 GiB + 2×48 GB | 15.36 TB |
 | GPU  | 132 | 4× Nvidia GH200 | 4×72 (ARM) | 4×120 GiB CPU + 4×96 GiB GPU | 0.96 TB |
 
 - **Roihu-CPU** (x86_64, Zen 5, supports AVX-512): login nodes
@@ -200,8 +200,8 @@ on **actual runtime** but on **all requested resources**.
   cleaned frequently.
 - **Compute nodes, automatic `$TMPDIR`** (free, no reservation): 20 GiB on
   shared-node (R) jobs, 600 GiB on full-node (N), 150 GiB per-GPU-job (G),
-  ~578 GiB on XL, ~14 TiB on viz (docs pages disagree slightly on XL/viz
-  figures). ~5000/1400 MB/s R/W on M/L/GPU nodes. Wiped when the job ends —
+  578 GiB on XL, 14 TiB on viz. ~5000/1400 MB/s R/W on M/L/GPU nodes.
+  Wiped when the job ends —
   copy results out *inside* the job script.
   On M/L/GPU nodes this is meant for temp files, not sustained
   high-performance I/O; XL/V nodes have the faster (6700/4000 MB/s) drives.
@@ -350,7 +350,3 @@ mechanics and safety rules (uploads are create-or-replace!).
 - **Sensitive-data (SD) workflows on Roihu**: pilot autumn 2026, GA possibly
   early 2027.
 - **Spack user-install tutorial**: marked work-in-progress upstream.
-- Known doc inconsistencies (upstream, 2026-08): XL/viz `$TMPDIR` sizes
-  differ between pages; GPU-example headings ("1-16 GPUs") disagree with the
-  partition table (`gpumedium` max 4 GPUs/job); viz L40 memory 44 vs 48 GiB.
-  When it matters, test on the system or ask CSC service desk.
