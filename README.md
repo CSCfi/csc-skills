@@ -1,7 +1,8 @@
 # csc-skills
 
-Claude Code skills for using CSC infrastructure correctly, safely, and in a
-streamlined way. Each subdirectory is a self-contained skill.
+Agent skills for using CSC infrastructure correctly, safely, and in a
+streamlined way. Each subdirectory is a self-contained skill packaged for
+Claude Code, Codex, GitHub Copilot CLI, and compatible agent harnesses.
 
 ## Available skills
 
@@ -46,6 +47,31 @@ streamlined way. Each subdirectory is a self-contained skill.
 
 ## Installing
 
+The canonical skill content lives under `skills/`. The checked-in
+`.agents/skills/` symbolic links expose the same files to Codex and GitHub
+Copilot CLI without maintaining copies.
+
+### Codex CLI
+
+Clone the repository and launch Codex anywhere inside the checkout; Codex
+discovers the repository skills through `.agents/skills/`. Use `/skills` to
+verify discovery.
+
+For a user-wide installation shared with Copilot CLI, link the skills into the
+standard user directory:
+
+```bash
+mkdir -p ~/.agents/skills
+ln -s "$PWD"/skills/csc-* ~/.agents/skills/
+```
+
+### General agent harnesses
+
+Point an Agent Skills-compatible harness at `skills/`, or link the individual
+skill directories into the harness's configured skill search path.
+
+### Claude Code
+
 This repo is a Claude Code **plugin marketplace**. The recommended way to
 install — and to get updates by pulling — is via the plugin system. In Claude
 Code, first register the marketplace:
@@ -69,7 +95,7 @@ Skills are loaded on demand — Claude only pulls a skill into context when its
 description matches what you're doing — so installing the whole plugin costs
 nothing for the skills you don't happen to use.
 
-### Manual install (without the plugin system)
+#### Manual install (without the plugin system)
 
 Skills are also discovered from `~/.claude/skills/`. To install them for your
 user without the plugin system:
@@ -91,9 +117,16 @@ to an Allas bucket") and it will pick the skill up automatically.
 
 ```
 csc-skills/
+├── .agents/
+│   └── skills/
+│       └── csc-allas -> ../../skills/csc-allas
 ├── .claude-plugin/
 │   ├── plugin.json        # plugin manifest (source ".": the repo is the plugin)
 │   └── marketplace.json   # marketplace manifest (lists this one plugin)
+├── .codex-plugin/
+│   └── plugin.json        # Codex skills-only plugin manifest
+├── AGENTS.md -> CLAUDE.md # shared agent-maintainer instructions
+├── CLAUDE.md
 ├── README.md
 └── skills/
     └── csc-allas/         # one directory per skill
@@ -105,6 +138,7 @@ csc-skills/
 
 Add a new directory under `skills/` with a `SKILL.md` (YAML frontmatter `name` +
 `description`, then the body) and optional `references/*.md` files loaded on
-demand. The plugin auto-discovers everything under `skills/`, so no manifest
-edits are needed for a new skill. CSC-specific facts should be sourced from the
-[CSC user guide](https://docs.csc.fi/).
+demand. Add a matching relative symbolic link under `.agents/skills/`; both
+plugin manifests discover everything under `skills/`, so they need no edits for
+a new skill. CSC-specific facts should be sourced from the [CSC user
+guide](https://docs.csc.fi/).

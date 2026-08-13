@@ -1,17 +1,18 @@
 # csc-skills — how these skills are built and maintained
 
-Working notes for whoever (Claude or human) produces or updates skills in this
+Working notes for whoever (Agent or human) produces or updates skills in this
 repo. For install/layout aimed at *consumers*, see `README.md`; this file is
 about *authoring*.
 
 ## What this repo is
 
-A Claude Code **plugin marketplace** containing one plugin (`csc-skills`) that
-bundles every CSC-infrastructure skill. Each skill is a directory under
-`skills/<name>/`. Skills are loaded on demand (Claude pulls a skill into context
-only when its `description` matches the task), so the bundle stays cheap no
-matter how many skills it holds. Install is `csc-skills@csc-skills`. Layout and
-the "add a skill" mechanics are in `README.md`.
+An Agent Skills collection packaged as a Claude Code plugin marketplace and a
+Codex skills-only plugin. Each skill is a directory under `skills/<name>/` and
+is exposed to repository-aware harnesses through symbolic links under
+`.agents/skills/`. Skills are loaded on demand when their `description` matches
+the task, so the bundle stays cheap no matter how many skills it holds. Claude
+Code installation is `csc-skills@csc-skills`; layout and the "add a skill"
+mechanics are in `README.md`.
 
 ## Source of truth for CSC facts
 
@@ -137,29 +138,31 @@ the reason inline (as Allas does for object overwrites).
 1. **Pick the service and find its upstream docs dir** (see the table above; if
    it's a new service, locate it under `.upstream/csc-user-guide/docs/`).
 2. **Sync upstream:** run `scripts/sync-upstream.sh`.
-3. **Research by fan-out.** Launch parallel `Explore` agents over the upstream
-   docs, grouped by topic (concepts/billing, auth/CLI, networking/security,
-   storage, …). Tell each to **preserve exact commands/URLs verbatim** and flag
-   CSC quirks/warnings. Read the few most central files yourself. This keeps the
-   research out of your main context while staying faithful to the source.
+3. **Research by fan-out.** When supported by the current harness, launch
+   parallel exploration agents over the upstream docs, grouped by topic
+   (concepts/billing, auth/CLI, networking/security, storage, …). Tell each to
+   **preserve exact commands/URLs verbatim** and flag CSC quirks/warnings. Read
+   the few most central files yourself. This keeps the research out of your
+   main context while staying faithful to the source.
 4. **Draft the three files** per the anatomy above, then re-read them against
    *Write only what the reader doesn't already know* and cut what a model would
    have got right anyway.
-5. **Wire it in:** new dir under `skills/`; add a bullet to the README
+5. **Wire it in:** new dir under `skills/`; add the relative symlink
+   `.agents/skills/<name> -> ../../skills/<name>`; add a bullet to the README
    "Available skills"; add a row to the skill↔docs table above; refresh the
-   plugin/marketplace `description`s if the repo's scope line changed. (The
-   plugin auto-discovers `skills/`, so no manifest edit is needed for the skill
-   itself.)
-6. **Validate** the JSON manifests and **commit**.
+   plugin/marketplace `description`s if the repo's scope line changed. (Both
+   plugin manifests auto-discover `skills/`, so no manifest edit is needed for
+   the skill itself.)
+6. **Validate** both plugin manifests, the skill symlinks, and **commit**.
 
 ## Reviewing skills against upstream
 
-Run this on demand (e.g. ask Claude: *"review csc-pouta against upstream"*).
-It is a **procedure for Claude to follow**, not a script:
+Run this on demand (e.g. ask your agent: *"review csc-pouta against
+upstream"*). It is a **procedure for the agent to follow**, not a script:
 
 1. **Sync upstream:** `scripts/sync-upstream.sh` (gets the latest docs into
    `.upstream/`).
-2. **Re-extract current facts.** Fan out `Explore` agents over the skill's
+2. **Re-extract current facts.** Fan out exploration agents over the skill's
    mapped upstream docs (see the table) and pull out, verbatim, the facts the
    skill encodes: commands, endpoint URLs/ports, auth flow, flavor/image names,
    billing/quota numbers, default protocol/auth choices, and any deprecations.
@@ -177,11 +180,15 @@ It is a **procedure for Claude to follow**, not a script:
    place it's mirrored**: the frontmatter `description`, the quick-start bullets,
    the README blurb, and the `code-patterns.md` intro. (Grep the skill for the
    old phrasing.)
-6. **Validate** JSON manifests and **commit**.
+6. **Validate** both plugin manifests and **commit**.
 
 ## Git / distribution
 
 - Marketplace name = plugin name = `csc-skills` → `csc-skills@csc-skills`.
+- The Codex plugin manifest is `.codex-plugin/plugin.json`; its `skills` path
+  points to the same canonical `skills/` directory.
+- `AGENTS.md` links to this file, and `.agents/skills/*` links to `skills/*`;
+  do not replace those links with copied content.
 - Remote: CSC GitLab (`origin`,
   `ssh://git@gitlab.ci.csc.fi:10022/soda/csc-skills.git`).
 - End commit messages with the Claude `Co-Authored-By:` trailer.
