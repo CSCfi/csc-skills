@@ -5,7 +5,8 @@ description: >
   user wants to launch/configure/manage virtual machines, volumes, snapshots,
   images, networks, security groups, floating IPs or SSH access on Pouta, set up
   OpenStack credentials (RC file / application credentials / clouds.yaml), use
-  the openstack CLI or openstacksdk, or asks about Pouta concepts (cPouta vs
+  the openstack CLI or openstacksdk, send email from a VM (the
+  smtp.pouta.csc.fi SMTP relay, SPF), or asks about Pouta concepts (cPouta vs
   ePouta, CSC projects/tenants, flavors, billing, VM lifecycle/shelving,
   ephemeral vs persistent storage). Covers cPouta (the common case) and answers
   ePouta (sensitive-data cloud) questions. Can create resources (with clear
@@ -118,6 +119,10 @@ the mechanics, with the CSC-specific quirks built in.
   ePouta, it's the private VPN IP instead.
 - **"Stop paying for it."** Recommend **shelve** (stops billing) over stop;
   or delete (with boot-from-volume so data survives).
+- **"Send email from my VM."** Use CSC's relay — **`smtp.pouta.csc.fi:25`, no
+  auth**, *not* `smtp.csc.fi` (that's CSC-internal). It authorises by source IP
+  (so it won't work from a laptop) and needs a valid envelope `Sender`; don't run
+  a mail server on the VM. Raise SPF/deliverability from `concepts.md`.
 - **"What will this cost?"** Use the indicative BU/h rate table in
   `concepts.md` for a ballpark (VM + volumes + floating IPs, billed hourly),
   but point the user at the BU calculator (https://research.csc.fi/resources/#buc)
@@ -130,9 +135,9 @@ Load the relevant file when you need detail:
 - `references/concepts.md` — cPouta vs ePouta, CSC projects & quotas, flavor
   families & billing, the full VM lifecycle (active/stop/pause/suspend/shelve/
   delete and which states bill), networking (project network/router, floating
-  IPs, security groups), SSH keypairs & default image users, storage
-  (ephemeral vs persistent volumes vs snapshots vs Allas), security best
-  practices, and ePouta access.
+  IPs, security groups), the SMTP relay & mail deliverability, SSH keypairs &
+  default image users, storage (ephemeral vs persistent volumes vs snapshots vs
+  Allas), security best practices, and ePouta access.
 - `references/code-patterns.md` — authentication (RC file, application
   credentials, `clouds.yaml`), installing/using the `openstack` CLI,
   openstacksdk (Python), and ready-to-adapt recipes: launch a VM, volumes,

@@ -8,6 +8,7 @@ description: >
   or push container images to Rahti's integrated registry (BuildConfig, S2I,
   `oc new-app`, `oc new-build`); use the `oc` CLI or the web console
   (rahti.csc.fi); set up custom domains, TLS, IP allowlists or NetworkPolicies;
+  send email from a pod (the smtp.pouta.csc.fi SMTP relay, SPF);
   create/manage a Rahti project/namespace and its CSC-project mapping and quota;
   or asks about Rahti concepts (OpenShift vs Kubernetes, non-root containers,
   rahtiapp.fi routes, billing). Can create resources (with clear disclosure of
@@ -127,6 +128,10 @@ commands and (b) advise on the mechanics, with the CSC-specific quirks built in.
   `image-registry.apps.2.rahti.csc.fi/<project>/<name>`; log in with
   `docker login -u unused -p $(oc whoami -t) …`. Or build in-cluster with
   `oc new-build` / `oc start-build`. Make the image Rahti-compatible (rule 3).
+- **"Send email from my app."** Use CSC's relay — **`smtp.pouta.csc.fi:25`, no
+  auth**, *not* `smtp.csc.fi` (that's CSC-internal). It authorises by source IP
+  (Rahti nodes qualify, a laptop doesn't) and needs a valid envelope `Sender`.
+  Config goes in a ConfigMap, not the image. SPF/limits: `concepts.md`.
 - **"Scale / update / roll back / delete it."** These touch live objects
   (`oc scale`, `oc set image`, `oc rollout`, `oc delete`) — avoid-zone: write
   the command/manifest as a reviewable script, state the effect, and let the
@@ -144,9 +149,9 @@ Load the relevant file when you need detail:
   (pod/deployment/service/route, configmap/secret, job, PVC, BuildConfig/
   ImageStream), Rahti projects vs CSC projects & quota, billing model & rates,
   the non-root/random-UID security model and image requirements, networking
-  (routes, TLS termination, IP allowlist, NetworkPolicies, egress IP), storage
-  (ephemeral/PVC/snapshots, `standard-csi`, no online expand, Allas), the
-  registry, deprecations, and gotchas.
+  (routes, TLS termination, IP allowlist, NetworkPolicies, egress IP, the SMTP
+  relay for outbound mail), storage (ephemeral/PVC/snapshots, `standard-csi`, no
+  online expand, Allas), the registry, deprecations, and gotchas.
 - `references/code-patterns.md` — `oc` install & login, project creation with
   the CSC mapping, deploy recipes (from Git/S2I, from image, from YAML, Helm,
   Kustomize), Route + TLS + custom domain + IP allowlist, PVC create/mount/

@@ -242,6 +242,27 @@ your own initiative.
 
 ---
 
+## Sending email from a VM (SMTP relay)
+
+Only the settings are CSC-specific — write ordinary `smtplib`/MTA code around
+them:
+
+```
+host: smtp.pouta.csc.fi   port: 25   auth: none   TLS: none
+```
+
+- **Not `smtp.csc.fi`** — that's CSC-internal and won't relay for cloud users.
+- No `login()`/`starttls()`; access is by **source IP**, so mail-sending code
+  **only works from the VM**, not from a laptop. Test on the VM
+  (`swaks --server smtp.pouta.csc.fi:25 --from you@university.fi --to you@university.fi`).
+- Set a valid **envelope sender** (`send_message(msg, from_addr=...)`,
+  Postfix `relayhost = [smtp.pouta.csc.fi]:25`) — the relay validates it, and
+  it's a different header from `From`.
+- Deliverability (SPF `include:hosted-at.csc.fi`) and volume limits: see
+  `concepts.md`.
+
+---
+
 ## Heat / Terraform
 
 For reproducible, tear-down-and-rebuild infrastructure, prefer

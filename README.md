@@ -17,7 +17,8 @@ streamlined way. Each subdirectory is a self-contained skill.
   (openstack CLI, openstacksdk, Heat/Terraform) for launching and managing VMs,
   volumes, snapshots, images, networking, security groups and SSH access;
   advises on the mechanics (CSC projects/tenants, flavors, billing & shelving,
-  ephemeral vs persistent storage, application credentials). Can create
+  ephemeral vs persistent storage, application credentials, sending mail via the
+  `smtp.pouta.csc.fi` relay). Can create
   resources with clear disclosure of cost/exposure, but does not modify or
   delete existing OpenStack resources on your behalf.
 
@@ -38,7 +39,8 @@ streamlined way. Each subdirectory is a self-contained skill.
   pushing images to the integrated registry (BuildConfig, S2I, `oc new-app`),
   custom domains/TLS/IP allowlists, and project/quota setup; advises on the
   mechanics (OpenShift vs Kubernetes, the non-root multi-tenant security model,
-  `*.rahtiapp.fi` routes, billing). Can create resources with clear disclosure
+  `*.rahtiapp.fi` routes, sending mail via the `smtp.pouta.csc.fi` relay,
+  billing). Can create resources with clear disclosure
   of cost (BU) and public exposure, but does not modify or delete existing
   Rahti resources on your behalf.
 

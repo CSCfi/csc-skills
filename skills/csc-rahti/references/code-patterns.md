@@ -294,6 +294,31 @@ keep data out of the image (mount a PVC or pull from Allas at start).
 
 ---
 
+## Sending email from a pod (SMTP relay)
+
+Only the settings are CSC-specific — write ordinary mail code around them:
+
+```
+host: smtp.pouta.csc.fi   port: 25   auth: none   TLS: none
+```
+
+- **Not `smtp.csc.fi`** — that's CSC-internal and won't relay for cloud users.
+- No credentials to mount; the relay authorises by **source IP** (Rahti nodes
+  qualify), so it **only works from a pod**, not from a laptop — test from
+  inside: `oc exec deploy/myapp -- python -c '...'` (or `swaks`, if the image
+  has it).
+- Set a valid **envelope sender** — the relay validates it, and it's a different
+  header from `From`.
+- Host, port and sender are **not secrets** — a ConfigMap referenced via
+  `envFrom` keeps the image portable, no Secret needed:
+  `oc create configmap smtp-config --from-literal=SMTP_HOST=smtp.pouta.csc.fi
+  --from-literal=SMTP_PORT=25 --from-literal=MAIL_SENDER=you@university.fi`
+  (wiring it into a *live* deployment with `oc set env` is avoid-zone).
+- Deliverability (SPF `include:hosted-at.csc.fi`) and volume limits: see
+  `concepts.md`.
+
+---
+
 ## Avoid-zone: modifying / deleting live resources (write, don't run)
 
 Per rule 1, generate these as a reviewable script and let the user run them;

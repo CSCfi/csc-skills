@@ -172,6 +172,18 @@ meant to be fully public, and add an HSTS header where appropriate
 - **Egress IP**: outgoing traffic from Rahti workloads currently leaves from
   **`86.50.229.150`** (may change; dedicated egress IPs for a namespace on
   request to servicedesk@csc.fi). Rahti is **IPv4-only**.
+- **Outbound email**: use CSC's SMTP relay (smarthost)
+  **`smtp.pouta.csc.fi:25`, no authentication** — the same service cPouta uses,
+  and **not `smtp.csc.fi`** (that one is CSC-internal). It authorises by **source
+  IP**; Rahti nodes qualify, so the same code **won't run from a laptop**. The
+  envelope **`Sender`** must be a valid address and is validated by the relay
+  (a different header from `From`). Provided as-is/in evaluation. **High SMTP
+  volume** (e.g. public mailing lists) needs coordinating with
+  <servicedesk@csc.fi> first. Deliverability: the sending domain's SPF needs
+  `include:hosted-at.csc.fi` — but only its DNS owners can add that, and a
+  **malformed SPF record breaks mail for the whole domain**, so if the user
+  doesn't control that DNS, their provider's authenticated SMTP server is the
+  better answer.
 
 ## Storage
 
@@ -240,4 +252,6 @@ meant to be fully public, and add an HSTS header where appropriate
 - **Usernames are case-sensitive** when sharing a project, and Rahti won't
   validate a non-existent username — a typo silently grants nobody.
 - **`oc delete project` and PVC deletion are irreversible**, including PV data.
+- **The SMTP relay is `smtp.pouta.csc.fi`, not `smtp.csc.fi`** (CSC-internal),
+  and it's IP-restricted — mail code can't be tested from a laptop.
 - **Quota is shared** across all Rahti projects under one CSC project.

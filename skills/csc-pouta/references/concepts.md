@@ -170,6 +170,31 @@ recreate later; release floating IPs you aren't using; automate provisioning
   office/VPN ranges. Two firewalls exist: the security group *and* the VM's own
   iptables/netfilter.
 
+## Sending email (SMTP relay)
+
+CSC runs an SMTP relay (smarthost) for cloud workloads: **`smtp.pouta.csc.fi:25`,
+no authentication.** Don't deploy your own mail server on a VM; use this.
+
+- **It is not `smtp.csc.fi`** — that's CSC's internal mail server, not the cloud
+  relay.
+- Authorisation is by **source IP** (cPouta VMs, Rahti nodes), so **mail code
+  can't be tested from a laptop** — only from inside the cloud.
+- The envelope **`Sender`** must be a valid address (e.g. your university one);
+  the relay validates it, and it's a different header from `From`.
+- Egress is open by default, so no security-group rule is needed.
+- Provided **as-is and still in evaluation** — behaviour may change.
+- **High SMTP volume** (e.g. public mailing lists) must be coordinated with
+  <servicedesk@csc.fi> first, as must use cases the relay doesn't cover.
+
+Deliverability: if the sending domain publishes SPF, it needs CSC's include —
+`"v=spf1 include:hosted-at.csc.fi ~all"`. Two caveats worth raising unprompted:
+only the domain's DNS owners can make that change, and a **malformed SPF record
+breaks mail for the whole domain** (silent discards) — so it isn't a change to
+improvise. With a `csc.fi` envelope sender, csc.fi's own SPF/DKIM/DMARC apply.
+When the user doesn't control their domain's DNS, an **external authenticated
+SMTP server** (their email provider's) is usually the better answer than this
+relay.
+
 ## SSH keypairs & connecting
 
 - Keypairs are **injected into the VM only at creation** via cloud-init. Adding
@@ -218,7 +243,8 @@ Data-loss watchpoints: format/mount a volume **only on first use** (re-running
 You are responsible for your VMs' security. Minimum-exposure firewalling (open
 only needed ports, to fewest IPs); SSH keys only (never password login); don't
 bake keys into images (use the metadata service / cloud-init); disable unneeded
-services; prefer HTTPS/SFTP/FTPS; enable automatic security updates
+services (notably **no mail server of your own** — use the relay above);
+prefer HTTPS/SFTP/FTPS; enable automatic security updates
 (`unattended-upgrades` on Ubuntu, `dnf-automatic` on recent RHEL-likes) and
 schedule reboots for kernel updates; consider fail2ban/denyhosts; log to a
 secure/remote location; snapshot for recovery. Recommended account model: root
@@ -235,3 +261,5 @@ per-service no-login accounts.
 - EC2 API is not supported for VM management (EC2 creds work only for object
   storage).
 - Non-ASCII chars (ä/ö) don't work in the web virtual console — use SSH.
+- **The SMTP relay is `smtp.pouta.csc.fi`, not `smtp.csc.fi`** (CSC-internal),
+  and it's IP-restricted — mail code can't be tested from a laptop.
