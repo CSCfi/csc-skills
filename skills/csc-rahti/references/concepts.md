@@ -54,6 +54,10 @@ features (routes, builds, `oc new-app`) need `oc`.
   exactly one CSC project via **`csc_project: <number>`** — set in the project
   **Description** at creation (web console) or `--description='csc_project: 1000123'`
   (CLI). It becomes the `csc_project` **label** on the namespace.
+- **The Description is an accounting field, not a summary.** Creation fails if it
+  lacks the `csc_project:` line. Human-readable prose is permitted *in addition*
+  to that line, but the natural home for an app summary is the **display name** —
+  writing only prose into the description is a common cause of a failed deploy.
 - **The label can't be changed by normal users after creation** — contact
   servicedesk, or create a new project with the right label.
 - **One CSC project can own several Rahti projects**, and the **quota is shared**
@@ -252,6 +256,8 @@ meant to be fully public, and add an HSTS header where appropriate
 - **Usernames are case-sensitive** when sharing a project, and Rahti won't
   validate a non-existent username — a typo silently grants nobody.
 - **`oc delete project` and PVC deletion are irreversible**, including PV data.
+- **A project description without `csc_project: <number>` fails creation** — the
+  field is for accounting, not prose (app summaries go in the display name).
 - **The SMTP relay is `smtp.pouta.csc.fi`, not `smtp.csc.fi`** (CSC-internal),
   and it's IP-restricted — mail code can't be tested from a laptop.
 - **Quota is shared** across all Rahti projects under one CSC project.

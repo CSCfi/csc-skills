@@ -34,15 +34,26 @@ oc project <name>    # switch active project
 ## Create a project (with the CSC-project mapping)
 
 The `csc_project` mapping is mandatory and **cannot be changed later**.
+`--description` is the **accounting field**; `--display-name` is the prose one.
 
 ```bash
-# Creating a namespace is non-clobbering (name clash just errors). Disclose which
-# CSC project it bills before running.
+# WRONG — a prose description with no csc_project line. Creation fails.
+oc new-project my-app --description='Web app for the Pied Piper project'
+
+# RIGHT. Creating a namespace is non-clobbering (name clash just errors).
+# Disclose which CSC project it bills before running.
 oc new-project my-unique-project-name \
   --description='csc_project: 1000123' \
   --display-name='My web app'
 
-# Verify the mapping took:
+# Prose is fine *alongside* the line, if it must live in the description:
+oc new-project my-unique-project-name \
+  --description='Hosts the Pied Piper web app.
+
+csc_project: 1000123'
+
+# Verify the mapping took (do this after creating — a missing/wrong label is
+# not user-fixable afterwards):
 oc get project my-unique-project-name -o yaml | grep -A2 labels   # look for csc_project
 ```
 

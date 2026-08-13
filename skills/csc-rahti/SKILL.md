@@ -84,14 +84,23 @@ commands and (b) advise on the mechanics, with the CSC-specific quirks built in.
    never an `oc delete`, project deletion, or bulk teardown on your own
    initiative.
 
-2. **A Rahti project is a Kubernetes namespace; it maps to a CSC project for
-   billing.** Each Rahti project (namespace) must declare `csc_project: <number>`
-   (in its description at creation / as a label) — that's the CSC computing
-   project whose **Cloud BU quota** it bills against. One CSC project can own
-   several Rahti projects, and **its quota is shared across all of them**. The
-   `csc_project` label **can't be changed after creation** (contact servicedesk
-   or make a new project). All resources live inside one namespace; credentials
-   (`oc login` token) are per-user, MFA-gated. See `concepts.md`.
+2. **Every Rahti project must carry `csc_project: <number>` in its *description*
+   — creation fails without it.** The description is an **accounting field, not a
+   human-readable summary**: it must contain that literal line, naming the CSC
+   computing project whose **Cloud BU quota** pays for the namespace.
+
+   ```bash
+   oc new-project my-app --description='csc_project: 1000123' --display-name='My app'
+   ```
+
+   Prose is allowed *in addition* to the line, but **a description that is only
+   prose is the classic failure** — an app summary goes in `--display-name`, and
+   `--description` keeps the `csc_project:` line. The resulting label **can't be
+   changed by users after creation** (servicedesk, or make a new project), so
+   confirm the number before creating rather than guessing it. A Rahti project is
+   a Kubernetes namespace; one CSC project can own several and **quota is shared
+   across all of them**. Credentials (`oc login` token) are per-user, MFA-gated.
+   See `concepts.md`.
 
 3. **Containers run non-root, as a random UID — design images for it.** Rahti is
    multi-tenant: **no root, no privileged mode**, the pod gets an arbitrary UID
@@ -112,7 +121,8 @@ commands and (b) advise on the mechanics, with the CSC-specific quirks built in.
 
 - **"Deploy my app / this Git repo on Rahti."** Confirm: source (a Git repo →
   S2I `oc new-app <giturl>#<branch>`; a prebuilt image → `oc new-app <image>`;
-  raw manifests → `oc create -f`), the **CSC project** to bill, and whether it
+  raw manifests → `oc create -f`), the **CSC project number** to bill (it goes in
+  the project description as `csc_project: <number>` — rule 2), and whether it
   should be **public**. Then disclose rough BU/h and (if exposing) the public
   URL, and either run the create (rule 1 allows it) or generate the manifests
   from `code-patterns.md`. Expose with `oc expose svc/<name>`; get the URL with
