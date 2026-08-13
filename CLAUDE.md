@@ -49,7 +49,10 @@ Three files, mirroring a "router + two halves" shape:
   - The **`description` is the trigger**: phrase it the way users phrase
     requests, and pack in the key nouns/verbs (service name, operations,
     product names like `a3s.fi`, `clouds.yaml`). It also states the safety
-    posture in one line.
+    posture in one line. **Hard cap: 1024 characters** ([Agent Skills
+    spec](https://agentskills.io/specification)) — `scripts/check-skills.sh`
+    checks it. Spend the budget on trigger words, not on behavioural rules;
+    those belong in the body's operating rules.
   - The **body is a router**: *Operating rules* first (always-in-context
     safety/defaults), then a *Quick start* for the common requests, then
     *pointers* telling the model which reference file to load when. Keep only
@@ -153,7 +156,8 @@ the reason inline (as Allas does for object overwrites).
    plugin/marketplace `description`s if the repo's scope line changed. (Both
    plugin manifests auto-discover `skills/`, so no manifest edit is needed for
    the skill itself.)
-6. **Validate** both plugin manifests, the skill symlinks, and **commit**.
+6. **Validate** with `scripts/check-skills.sh` (frontmatter, the 1024-char
+   description cap, both plugin manifests, the symlinks) and **commit**.
 
 ## Reviewing skills against upstream
 
@@ -180,7 +184,7 @@ upstream"*). It is a **procedure for the agent to follow**, not a script:
    place it's mirrored**: the frontmatter `description`, the quick-start bullets,
    the README blurb, and the `code-patterns.md` intro. (Grep the skill for the
    old phrasing.)
-6. **Validate** both plugin manifests and **commit**.
+6. **Validate** with `scripts/check-skills.sh` and **commit**.
 
 ## Git / distribution
 

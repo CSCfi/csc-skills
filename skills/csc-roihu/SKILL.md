@@ -1,22 +1,20 @@
 ---
 name: csc-roihu
 description: >
-  Use Roihu, CSC's national supercomputer (successor to Puhti and Mahti),
-  correctly and safely. Invoke when the user wants to run/submit/monitor Slurm
-  batch jobs (sbatch, srun, squeue, seff) or interactive sessions on Roihu;
-  pick a CPU or GPU partition (small, medium, large, longrun, hugemem, test,
-  gpumedium, gpularge, gputest, interactive); write a job script for the AMD
-  Zen 5 CPU nodes or the Nvidia GH200 (Grace Hopper) GPU nodes; connect over
-  SSH — Roihu requires a signed SSH certificate (24 h validity, MyCSC or the
-  certificate-helper-tool csc_cert.py); manage data on home/projappl/scratch/
-  dataset disk areas or local NVMe ($TMPDIR); compile or install software
-  (modules, x86 vs ARM, containers, Tykky); migrate from Puhti/Mahti; use the
-  web interface (www.roihu.csc.fi) or Allas from Roihu; or asks about Roihu
-  concepts (billing units, quotas, Lustre, login-node policy). Generates job
-  scripts and commands, runs read-only inspection, and submits jobs only with
-  cost disclosure; it does NOT itself delete data or cancel/modify existing
-  jobs — it writes reviewable scripts for those. Follows CSC HPC etiquette:
-  no heavy work on login nodes, no small-file thrashing on Lustre.
+  Use Roihu, CSC's national supercomputer, correctly and safely. Invoke when the
+  user wants to run/submit/monitor Slurm batch jobs (sbatch, srun, squeue, seff)
+  or interactive sessions; pick a CPU or GPU partition (small, medium, large,
+  longrun, hugemem, test, gpumedium, gpularge, gputest, interactive); write job
+  scripts for AMD Zen 5 CPU or Nvidia GH200 GPU nodes; connect over SSH — Roihu
+  requires a signed SSH certificate (24 h, MyCSC or the certificate-helper-tool
+  csc_cert.py); manage data on home/projappl/scratch/dataset disk areas or local
+  NVMe ($TMPDIR); compile or install software (modules, x86 vs ARM, containers,
+  Tykky);
+  migrate from Puhti/Mahti; use the web interface (www.roihu.csc.fi) or Allas;
+  or asks about Roihu concepts (billing units, quotas, Lustre, login-node
+  policy, HPC etiquette). Generates job scripts, runs read-only inspection, and
+  submits jobs only with cost disclosure; does NOT delete data or cancel/modify
+  existing jobs — it writes reviewable scripts for those.
 ---
 
 # CSC Roihu (national supercomputer)
