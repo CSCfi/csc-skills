@@ -58,6 +58,39 @@ Three files, mirroring a "router + two halves" shape:
 - **`references/code-patterns.md`** — ready-to-adapt code/commands. The
   "generate" half.
 
+## Write only what the reader doesn't already know
+
+Progressive disclosure decides *where* a fact goes; this decides *whether* it
+belongs at all. Assume the reader is a capable coding model — any model, not
+just the one that wrote the skill. It already knows Python, `smtplib`, Slurm,
+Kubernetes, S3, SPF and ordinary sysadmin practice; it does not know CSC's
+hostnames, quotas, billing units, or local rules. Carry the second kind; lean on
+the first. Concretely, cut from your own draft:
+
+- **Boilerplate a model writes correctly unprompted** — whole `smtplib` scripts,
+  Postfix/Dockerfile config, `try/except` scaffolding. Give the CSC-specific
+  *settings* plus a line of anti-prior, and let it write the code around them.
+- **Explainers of standard technology** — what SPF/DKIM/DMARC do, what a
+  Service is, how SSH keys work.
+- **Restatements.** Mirroring a fact across the description / quick start /
+  reference layers is deliberate (a reader may load only one). Repeating it
+  twice *inside* one file is not.
+- **Meta-instructions and filler** — "don't guess this", "be careful", "this is
+  important", advice not to build fragile things.
+
+Two things earn their place even though they're standard:
+
+- **Where a model's default is wrong.** Naming `smtp.pouta.csc.fi` matters
+  *because* models otherwise reach confidently for `smtp.csc.fi`. Wherever a
+  plausible wrong answer exists, an explicit "**not** X — it's *this* instead"
+  is the highest-value line in the file — and since models don't share the same
+  wrong defaults, write the correction out rather than relying on one model's
+  habits.
+- **Where being wrong is expensive or silent** — data loss, BU cost, a bad SPF
+  edit breaking a whole domain's mail. Restate those even if inferable.
+
+Test: if deleting a line wouldn't change what a model does, delete it.
+
 ## Defaults & conventions
 
 - **Prefer the long-term / CSC-recommended path, and say why** — Allas → **S3**
@@ -109,7 +142,9 @@ the reason inline (as Allas does for object overwrites).
    storage, …). Tell each to **preserve exact commands/URLs verbatim** and flag
    CSC quirks/warnings. Read the few most central files yourself. This keeps the
    research out of your main context while staying faithful to the source.
-4. **Draft the three files** per the anatomy above.
+4. **Draft the three files** per the anatomy above, then re-read them against
+   *Write only what the reader doesn't already know* and cut what a model would
+   have got right anyway.
 5. **Wire it in:** new dir under `skills/`; add a bullet to the README
    "Available skills"; add a row to the skill↔docs table above; refresh the
    plugin/marketplace `description`s if the repo's scope line changed. (The
@@ -135,6 +170,9 @@ It is a **procedure for Claude to follow**, not a script:
 4. **Emit a drift report — don't edit yet.** For each notable claim, mark it
    *accurate* / *changed (old → new)* / *removed upstream* / *newly available
    upstream*, and list anything in the skill no longer supported by the docs.
+   Also flag accumulated bloat — passages restating standard technology rather
+   than CSC specifics (see *Write only what the reader doesn't already know*);
+   a review is the natural time to cut them.
 5. **Apply fixes** the user approves. When a fact or rule changes, **sync every
    place it's mirrored**: the frontmatter `description`, the quick-start bullets,
    the README blurb, and the `code-patterns.md` intro. (Grep the skill for the
