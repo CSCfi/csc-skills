@@ -52,36 +52,17 @@ Dashboard → **API Access → Download OpenStack RC File**, then:
 source <project>-openrc.sh   # prompts for your CSC password (not Haka/Virtu)
 ```
 
-Sets `OS_AUTH_URL`, `OS_USERNAME`, `OS_PASSWORD`, `OS_PROJECT_NAME`,
-`OS_USER_DOMAIN_NAME=Default`, `OS_IDENTITY_API_VERSION=3`,
-`OS_REGION_NAME=regionOne`. Fine interactively; prefer app credentials for
-automation/scripts so no CSC password is involved.
+Fine interactively; prefer app credentials for automation/scripts so no CSC
+password is involved.
 
-### Install the CLI
-
-```bash
-python3 -m venv ~/osclient && source ~/osclient/bin/activate
-pip install python-openstackclient        # provides the `openstack` command
-# add openstacksdk for Python, python-heatclient for Heat, etc.
-```
-
-Sanity check (read-only): `openstack catalog list`, `openstack server list`.
+The CLI is `python-openstackclient` (pip); sanity check with the read-only
+`openstack catalog list`.
 
 ---
 
 ## openstacksdk (Python)
 
-```python
-import openstack
-
-conn = openstack.connect(cloud="openstack")   # reads ~/.config/openstack/clouds.yaml
-
-# Read-only examples
-for f in conn.compute.flavors():
-    print(f.name, f.vcpus, f.ram)
-for s in conn.compute.servers():
-    print(s.name, s.status)
-```
+`openstack.connect(cloud="openstack")` reads `~/.config/openstack/clouds.yaml`.
 
 Launch a VM in Python (creation — OK to run after disclosing flavor/cost and
 SSH exposure, per rule 1):
@@ -111,18 +92,6 @@ print("ssh ubuntu@%s" % fip.floating_ip_address)
 ---
 
 ## openstack CLI recipes
-
-Read-only discovery (safe to run):
-
-```bash
-openstack flavor list
-openstack image list
-openstack network list
-openstack security group list
-openstack keypair list
-openstack server list
-openstack quota show          # project quotas/usage
-```
 
 ### Launch a VM
 
@@ -162,14 +131,8 @@ openstack security group rule create --proto tcp --dst-port 443 \
   --remote-ip 0.0.0.0/0 web-sg                # public HTTPS
 ```
 
-> Default to a **restricted `--remote-ip`** for SSH. Opening 22 to `0.0.0.0/0`
-> exposes the VM to internet-wide brute force.
-
-### Connect
-
-```bash
-ssh -i ~/.ssh/my-key.pem ubuntu@<floating-ip>   # ePouta: use the private IP, no floating IP
-```
+> Default to a **restricted `--remote-ip`** for SSH — never `0.0.0.0/0`.
+> (On ePouta, connect to the private IP; there is no floating IP.)
 
 ### Persistent volume: create, attach, first-use format, mount
 

@@ -155,9 +155,9 @@ commands and (b) advise on the mechanics, with the CSC-specific quirks built in.
 
 Load the relevant file when you need detail:
 
-- `references/concepts.md` — OpenShift vs Kubernetes and the core objects
-  (pod/deployment/service/route, configmap/secret, job, PVC, BuildConfig/
-  ImageStream), Rahti projects vs CSC projects & quota, billing model & rates,
+- `references/concepts.md` — OpenShift specifics (Deployment vs deprecated
+  DeploymentConfig, Route vs Ingress, project = namespace),
+  Rahti projects vs CSC projects & quota, billing model & rates,
   the non-root/random-UID security model and image requirements, networking
   (routes, TLS termination, IP allowlist, NetworkPolicies, egress IP, the SMTP
   relay for outbound mail), storage (ephemeral/PVC/snapshots, `standard-csi`, no

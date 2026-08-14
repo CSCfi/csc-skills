@@ -49,45 +49,17 @@ This is the common "upload the result with a naming scheme" case. Build the
 object key explicitly from the scheme; use pseudo-folders for structure.
 
 ```python
-def upload_result(s3, local_path, bucket, key):
-    """Upload one file to s3://bucket/key on Allas."""
-    s3.Object(bucket, key).upload_file(local_path)
-    print(f"uploaded {local_path} -> https://a3s.fi/{bucket}/{key}")
-
 # Example naming scheme: runs/<date>/<sample>-<metric>.tar.zst
 key = f"runs/{run_date}/{sample}-{metric}.tar.zst"
-upload_result(s3, "results/out.tar.zst", "2001234-results", key)
+s3.Object("2001234-results", key).upload_file("results/out.tar.zst")
+# public URL (if the object is public): https://a3s.fi/<bucket>/<key>
 ```
 
 If the scheme can overwrite a previous result, include a timestamp/run-id in the
 key (S3 PUT silently overwrites), or guard with a `head_object` existence check.
 
-### Download, list
-
-```python
-# Download
-s3.Object("2001234-results", "runs/2026-06-17/s01-auc.tar.zst").download_file("out.tar.zst")
-
-# List objects in a bucket
-bucket = s3.Bucket("2001234-results")
-for obj in bucket.objects.all():
-    print(obj.key)
-
-# List the project's buckets
-for b in s3.buckets.all():
-    print(b.name)
-```
-
-### Presigned (temporary) URL — share without credentials
-
-```python
-client = s3.meta.client
-url = client.generate_presigned_url(
-    "get_object",
-    Params={"Bucket": "2001234-results", "Key": "runs/2026-06-17/report.pdf"},
-    ExpiresIn=3600,  # seconds
-)
-```
+Downloads, listing and presigned URLs are ordinary boto3 against the same
+resource — nothing Allas-specific beyond the endpoint and env vars above.
 
 ### Create a bucket (may be run interactively)
 
@@ -121,30 +93,15 @@ local round-trip.
 
 ## aws-cli (S3)
 
-```bash
-aws --endpoint-url https://a3s.fi s3 ls
-aws --endpoint-url https://a3s.fi s3 ls s3://2001234-results/
-aws --endpoint-url https://a3s.fi s3 cp results/out.tar.zst s3://2001234-results/runs/2026-06-17/out.tar.zst
-aws --endpoint-url https://a3s.fi s3 cp s3://2001234-results/runs/2026-06-17/out.tar.zst ./
-```
-
-(If the endpoint is set in `~/.aws/config`, the flag can be dropped.)
+Works as usual with `--endpoint-url https://a3s.fi` on every command (or set
+the endpoint in `~/.aws/config` and drop the flag).
 
 ---
 
 ## s3cmd (S3) — sharing, signing, lifecycle, policy
 
-```bash
-s3cmd mb s3://2001234-results              # create bucket
-s3cmd put out.tar.zst s3://2001234-results # upload
-s3cmd ls                                   # list buckets (this project only)
-s3cmd ls s3://2001234-results              # list objects
-s3cmd du -H                                # project storage usage
-s3cmd info s3://2001234-results/out.tar.zst
-s3cmd get s3://2001234-results/out.tar.zst # download
-s3cmd del s3://2001234-results/out.tar.zst # delete object
-s3cmd rb  s3://2001234-results             # remove bucket (must be empty)
-```
+`allas-conf -m S3` writes `~/.s3cfg`, so ordinary s3cmd commands (`mb`, `put`,
+`get`, `ls`, `del`, `rb`, `info`, `du -H`) work as-is. The CSC-relevant recipes:
 
 ### Public
 
@@ -256,24 +213,9 @@ upload of a >5 GB file is interrupted, delete the partial object before retrying
 
 ### S3 (default) — permanent keys, nothing special needed
 
-Once `allas-conf -m S3` has been run once on the login node, the S3 keys persist,
-so the job script just uses aws-cli / s3cmd / boto3 directly:
-
-```bash
-#!/bin/bash
-#SBATCH --job-name=allas_job
-#SBATCH --account=project_2001234
-#SBATCH --time=48:00:00
-#SBATCH --partition=small
-#SBATCH --mem-per-cpu=2G
-#SBATCH --output=allas_%j.out
-
-aws --endpoint-url https://a3s.fi s3 cp s3://2001234-data/input.tar.zst ./
-tar xf input.tar.zst
-my_analysis -in data/ -out results/
-aws --endpoint-url https://a3s.fi s3 cp results/out.tar.zst \
-    s3://2001234-results/runs/$(date +%F)/out.tar.zst
-```
+Once `allas-conf -m S3` has been run once on the login node, the S3 keys
+persist, so an ordinary job script just calls aws-cli / s3cmd / boto3 / rclone
+directly — no re-auth, no extra `#SBATCH` options.
 
 ### Swift — token expires in 8 h, so refresh inside the job
 

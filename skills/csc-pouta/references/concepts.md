@@ -109,19 +109,12 @@ gpu.2.1gpu 100 (V100) and gpu.3.1gpu 150 (A100).)*
 
 ### Estimating
 
-Cost ≈ Σ (resource rate × hours). A month running 24/7 ≈ **720 h**. Example —
-a `standard.medium` VM up all month, with a 100 GB Standard volume and one
-floating IP:
-
-- VM: 1.05 × 720 ≈ **756 BU**
-- Volume: 0.1 TiB × 3.6 × 720 ≈ **259 BU**
-- Floating IP: 0.2 × 720 ≈ **144 BU**
-- **≈ 1 159 BU/month** (the calculator converts BU↔€ and shows your balance).
-
-Cost-saving patterns: **shelve** idle VMs (stop still bills); **boot from
-volume** so you can delete the VM (only the cheaper volume persists) and
-recreate later; release floating IPs you aren't using; automate provisioning
-(Heat/Terraform/Ansible) to tear down and rebuild on demand.
+Sum the VM/volume/floating-IP rates above over the hours in use; the calculator
+converts BU↔€ and shows your balance. Cost-saving patterns: **shelve** idle VMs
+(stop still bills); **boot from volume** so you can delete the VM (only the
+cheaper volume persists) and recreate later; release floating IPs you aren't
+using; automate provisioning (Heat/Terraform/Ansible) to tear down and rebuild
+on demand.
 
 ## VM lifecycle
 
@@ -154,21 +147,16 @@ recreate later; release floating IPs you aren't using; automate provisioning
   **security group** rule allowing the traffic and (b) a **floating IP**
   (cPouta) associated to the VM. CSC DNS nameservers for new subnets:
   `193.166.4.24`, `193.166.4.25`.
-- **Floating IPs**: allocate from the `public` pool, then associate to the VM;
-  it stays until released. Gotcha: the API will let you associate the *same*
-  floating IP to multiple instances with no error — the last call wins; avoid.
+- **Floating IPs** come from the `public` pool. Gotcha: the API will let you
+  associate the *same* floating IP to multiple instances with no error — the
+  last call wins; avoid.
 
 ### Security groups (firewall)
 
-- OpenStack-layer firewall rule sets; a VM can have several, a group can be on
-  several VMs; edits apply instantly and cost nothing.
 - **Don't modify the `default` group** (some init relies on it). Create a
   purpose-named group per service instead, documenting which ports/source IPs.
-- Egress is open by default; you mostly add **ingress** rules.
-- **Restrict source CIDR.** Single host = `/32` (e.g. `198.51.100.7/32`); a
-  subnet = `/24`/`/16`. **Never open SSH/22 to `0.0.0.0/0`** — scope it to your
-  office/VPN ranges. Two firewalls exist: the security group *and* the VM's own
-  iptables/netfilter.
+- **Restrict source CIDRs. Never open SSH/22 to `0.0.0.0/0`** — scope it to
+  your office/VPN ranges.
 
 ## Sending email (SMTP relay)
 
@@ -209,19 +197,16 @@ relay.
 | AlmaLinux (8/9/10) | `almalinux` |
 | CentOS Stream (9/10) | `cloud-user` |
 
-- Connect: `ssh -i ~/.ssh/key.pem <user>@<floating-ip>`. A `~/.ssh/config` Host
-  entry simplifies it. Bastion pattern: only one VM gets a floating IP; reach the
-  rest on private IPs via agent forwarding (`ssh -A`), noting its security
-  caveats. Creating a keypair in the dashboard lets you download the private key
-  **once** — Pouta keeps no copy.
+- Bastion pattern: give only one VM a floating IP and reach the rest on their
+  private IPs. Creating a keypair in the dashboard lets you download the private
+  key **once** — Pouta keeps no copy.
 
 ## Storage
 
 - **Ephemeral disk** — local to the host, fast, but **not durable**: lost on
   delete/shelve/migrate and **never in snapshots**. Don't keep valuable data
   here. (On `io.*` usually `/dev/vdb`.)
-- **Persistent volume (Cinder)** — network block storage, replicated, detachable
-  and reattachable to other VMs. Types: **Standard** (faster, pricier) and
+- **Persistent volume (Cinder)** — types: **Standard** (faster, pricier) and
   **Capacity** (bulk/cold, cheaper). Min 1 GB. Survives VM deletion. Most types
   attach to one VM at a time (see multiattach below).
 - **Object storage (Allas)** — for data shared across VMs/services or kept long
@@ -240,16 +225,11 @@ Data-loss watchpoints: format/mount a volume **only on first use** (re-running
 
 ## Security best practices (CSC emphasis)
 
-You are responsible for your VMs' security. Minimum-exposure firewalling (open
-only needed ports, to fewest IPs); SSH keys only (never password login); don't
-bake keys into images (use the metadata service / cloud-init); disable unneeded
-services (notably **no mail server of your own** — use the relay above);
-prefer HTTPS/SFTP/FTPS; enable automatic security updates
-(`unattended-upgrades` on Ubuntu, `dnf-automatic` on recent RHEL-likes) and
-schedule reboots for kernel updates; consider fail2ban/denyhosts; log to a
-secure/remote location; snapshot for recovery. Recommended account model: root
-(no SSH), one sudo admin user (key-only — the image's default user), and
-per-service no-login accounts.
+You are responsible for your VMs' security, and CSC expects the standard
+hardening practices (minimum-exposure firewalling, key-only SSH, automatic
+security updates). CSC-specific points: run **no mail server of your own** (use
+the relay above), and don't bake keys into images — use the metadata service /
+cloud-init.
 
 ## Known gotchas
 

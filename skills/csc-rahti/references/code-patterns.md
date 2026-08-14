@@ -25,8 +25,6 @@ echo/commit it):
 ```bash
 oc login https://api.2.rahti.csc.fi:6443 --token=<token-from-web-console>
 oc whoami            # sanity check (read-only)
-oc projects          # list projects you can see
-oc project <name>    # switch active project
 ```
 
 ---
@@ -136,33 +134,11 @@ spec:
 oc create -f app.yaml      # true create
 ```
 
-### Helm (preferred over deprecated Templates)
+### Helm / Kustomize
 
-```bash
-helm install myrelease <chart> --namespace <project>   # creates the release's objects
-```
-
-### Kustomize
-
-```bash
-oc kustomize build overlays/production            # render only (read-only)
-oc apply -k overlays/production                   # create new objects (disclose if it overwrites live ones)
-```
-
----
-
-## Inspect / debug (read-only — safe to run)
-
-```bash
-oc get pods                       # also: deploy, svc, route, pvc, is, bc, all
-oc describe pod <pod>
-oc logs -f <pod>                  # -c <container> for a specific container
-oc rsh <pod>                      # interactive shell in the pod
-oc status
-oc get route <name> -o jsonpath='{.spec.host}'
-oc describe AppliedClusterResourceQuotas   # quota usage
-oc describe limitranges
-```
+Both work as usual (`helm install`, `oc apply -k`). Prefer Helm charts over the
+deprecated Templates. `oc apply -k` over live objects is an overwrite — see
+SKILL.md rule 1.
 
 ---
 
@@ -216,18 +192,6 @@ spec:
   accessModes: [ ReadWriteOnce ]
   storageClassName: standard-csi
   resources: { requests: { storage: 8Gi } }   # multiples of 8 GiB recommended
-```
-
-Mount it in the pod spec:
-
-```yaml
-      volumes:
-      - name: data
-        persistentVolumeClaim: { claimName: data-pvc }
-      containers:
-      - name: myapp
-        # ...
-        volumeMounts: [ { name: data, mountPath: /data } ]
 ```
 
 Snapshot (PVC must not be mounted by any pod):
@@ -299,9 +263,7 @@ EXPOSE 8081
 USER nginx:root
 ```
 
-Keep it small: combine `RUN`s, use a `.dockerignore`, prefer multi-stage builds
-(build in a fat image, `COPY --from=builder` only the artifact into a slim one),
-keep data out of the image (mount a PVC or pull from Allas at start).
+Keep data out of the image — mount a PVC or pull from Allas at start.
 
 ---
 
@@ -342,13 +304,9 @@ oc scale --replicas=0 deploy/myapp        # downtime
 
 # Update the running image / roll back:
 oc set image deploy/myapp myapp=image-registry.apps.2.rahti.csc.fi/<project>/myapp:v2
-oc rollout status deploy/myapp
 oc rollout undo deploy/myapp
 
-# Edit / patch / replace a live object (overwrites current spec):
-oc edit deploy/myapp
-oc apply -f app.yaml          # over an EXISTING object this is an overwrite, not a create
-oc set resources deploy/myapp --limits=cpu=1,memory=1Gi --requests=cpu=200m,memory=512Mi
+# oc apply -f over an EXISTING object is an overwrite, not a create.
 
 # Destructive — irreversible, and the CSC project is shared:
 oc delete all --selector app=myapp        # removes the app's objects

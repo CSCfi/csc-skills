@@ -15,37 +15,14 @@ non-privileged, non-root user** (see Security below). Use Rahti for web apps,
 sites, APIs, databases, pre-packaged complex apps; use cPouta/ePouta when you
 need root, custom kernels, or VM-level isolation (sensitive data → ePouta).
 
-## Kubernetes / OpenShift objects (the vocabulary)
+## OpenShift specifics (standard Kubernetes otherwise)
 
-- **Namespace / Project** — the sandbox holding all your objects. In OpenShift a
-  *project* is a namespace plus annotations. "Project" and "namespace" are used
-  interchangeably.
-- **Pod** — one or more containers sharing an IP; the basic run unit. Pods are
-  **expendable** (killed/rescheduled any time, IP changes) — persist anything
-  valuable on a PVC, not in the pod.
-- **Service** — stable virtual IP + DNS name in front of a set of pods (selected
-  by labels); acts as an internal load balancer. Type `ClusterIP` by default.
-- **Deployment** — manages a ReplicaSet and rolling updates of stateless pods.
-  **Use this.** **DeploymentConfig** is the older OpenShift-specific equivalent,
-  **deprecated since OKD 4.14** — don't author new ones.
-- **StatefulSet** — like a Deployment but with stable identity + per-pod storage,
-  for stateful apps (databases, clustered services).
-- **Job** — runs pods to completion N times (batch tasks). Object names are
-  unique per namespace, so a Job can't be re-run until the old one is removed.
-- **ConfigMap / Secret** — config data injected as env vars or mounted files.
-  Secrets are only **base64-encoded** (not encrypted) and hidden from default
-  output; editing them is fiddly (get JSON → base64-decode → edit → re-encode →
-  `oc replace`). Don't treat base64 as protection.
-- **Route** (OpenShift) — exposes a Service to the internet over HTTP/HTTPS; the
-  OpenShift equivalent of a Kubernetes Ingress (see Networking).
-- **ImageStream** — abstracts container images and emits triggers when a new
-  image is pushed. **BuildConfig** — builds images (Docker/S2I strategy) into an
-  ImageStream; trigger with `oc start-build`.
-- **PersistentVolumeClaim (PVC)** — a request for durable storage (see Storage).
-
-Everything is described in YAML/JSON and created via the API (`oc create -f`,
-`oc apply -f`). `oc` is OpenShift's CLI; `kubectl` also works but OpenShift-only
-features (routes, builds, `oc new-app`) need `oc`.
+- An OpenShift *project* is a namespace plus annotations; "project" and
+  "namespace" are used interchangeably. `kubectl` works, but OpenShift-only
+  objects (Routes, BuildConfigs, ImageStreams, `oc new-app`) need `oc`.
+- Author **Deployments**, not **DeploymentConfigs** — the older
+  OpenShift-specific equivalent is **deprecated since OKD 4.14**.
+- A **Route** is OpenShift's equivalent of an Ingress (see Networking).
 
 ## Rahti project vs CSC project, quota & access
 
@@ -141,12 +118,10 @@ Rahti enforces multi-tenant isolation; you can't opt out:
   files the random UID must read/write).
 - Change any privileged listen port to ≥1024 (e.g. nginx `listen 80;` → `8081;`).
 - `EXPOSE` the unprivileged port; set `USER <name>:root` (or `USER 1001`).
-- Prefer small, trusted base images; keep build-time deps out of the runtime
-  image (multi-stage builds); use `.dockerignore`. Don't bake in secrets.
 
-You are responsible for the security of what you expose. Use modern TLS (v1.2+;
-v1.3 preferred), restrict access (IP allowlist / NetworkPolicy) for anything not
-meant to be fully public, and add an HSTS header where appropriate
+You are responsible for the security of what you expose — restrict anything not
+meant to be fully public (IP allowlist / NetworkPolicy), and add an HSTS header
+where appropriate
 (`oc annotate route <r> haproxy.router.openshift.io/hsts_header='true'`).
 
 ## Networking

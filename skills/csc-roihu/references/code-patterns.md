@@ -40,12 +40,6 @@ MyCSC → Profile → SSH PUBLIC KEYS → ⋮ next to the key → *Sign and down
 SSH certificate* → save as `~/.ssh/id_ed25519-cert.pub` (exactly this
 naming — OpenSSH finds certs by convention `<key>-cert.pub`).
 
-### Check certificate expiry
-
-```bash
-ssh-keygen -L -f ~/.ssh/id_ed25519-cert.pub | grep Valid
-```
-
 ### Connect
 
 ```bash
@@ -95,9 +89,6 @@ rsync -aP <username>@puhti.csc.fi:/scratch/<project>/my-data /scratch/<project>/
 tar c -C /scratch/<project> my-data | \
   ssh <username>@roihu-cpu.csc.fi 'cat > /scratch/<project>/my-data.tar'
 # with zstd compression: tar c -I zstd ... 'cat > .../my-data.tar.zst'
-
-# dry run first when unsure (won't catch permission errors, though)
-rsync -anP src/ dest/
 ```
 
 Rules of thumb: plain `rsync -aP` is fine for < 1000 files or > 1 MB average
@@ -192,24 +183,12 @@ module load python-pytorch/2.10
 srun python3 myprog.py
 ```
 
-### Array job (for tens of ≥ 30-min tasks; 100+ → HyperQueue)
+### Packing many tasks
 
-```bash
-#!/bin/bash
-#SBATCH --job-name=array_job
-#SBATCH --account=<project>
-#SBATCH --partition=small
-#SBATCH --time=02:00:00
-#SBATCH --ntasks=1
-#SBATCH --mem-per-cpu=4000
-#SBATCH --array=1-50
-#SBATCH --output=array_job_out_%A_%a.txt
-
-srun my_prog data_${SLURM_ARRAY_TASK_ID}.inp data_${SLURM_ARRAY_TASK_ID}.out
-```
-
-Chained post-processing: add `#SBATCH --dependency=afterok:<jobid>` to a
-small serial job instead of padding the big job's time limit.
+Ordinary Slurm array jobs (`#SBATCH --array=1-50` on `small`) for tens of
+≥ 30-min tasks; 100+ or shorter tasks → HyperQueue. Chained post-processing:
+add `#SBATCH --dependency=afterok:<jobid>` to a small serial job instead of
+padding the big job's time limit.
 
 ### Interactive sessions (never compute on the login node)
 

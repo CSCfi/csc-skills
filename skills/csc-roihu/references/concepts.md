@@ -132,8 +132,6 @@ Inspection: `sinfo --summarize`, `scontrol show partition <name>`.
   = 128). Billing is per full node regardless of how much you use.
 - Start MPI programs with **`srun`**, never `mpirun`/`mpiexec`; load the MPI
   module inside the script.
-- OpenMP: `export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK:-1}` plus
-  `OMP_PLACES=cores`, `OMP_PROC_BIND=spread` for binding.
 - **`$TMPDIR` NVMe is automatic** — do *not* port Puhti/Mahti `--gres=nvme:N`
   requests (that syntax remains only for reserving `$LOCAL_SCRATCH` on
   XL/viz nodes). `$LOCAL_SCRATCH` is not a drop-in replacement.

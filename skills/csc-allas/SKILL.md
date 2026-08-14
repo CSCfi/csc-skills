@@ -102,10 +102,10 @@ Load the relevant file when you need detail:
   naming & limits, public/private, ACLs (sharing to another project), bucket
   policies (IP allow), lifecycle, large-object/`_segments` behaviour, billing,
   common error messages, and the quirks that trip people up.
-- `references/code-patterns.md` — ready-to-adapt snippets: boto3
-  (upload/download/list/presigned URL), aws-cli, s3cmd (incl. public objects,
-  ACLs, signed URLs, lifecycle, IP policy), rclone, and Slurm batch-job
-  templates for both S3 and Swift.
+- `references/code-patterns.md` — ready-to-adapt snippets: boto3 setup (the
+  required checksum env vars, multi-project profiles) and uploads, s3cmd
+  recipes (public objects, ACLs, signed URLs, lifecycle, IP policy), rclone,
+  and using Allas from Slurm batch jobs (S3 vs the 8-h Swift token).
 
 When advising on mechanics, prefer these notes over memory; if something here is
 silent on a detail, say so rather than inventing CSC-specific behaviour.
