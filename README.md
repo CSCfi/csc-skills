@@ -15,13 +15,14 @@ Claude Code, Codex, GitHub Copilot CLI, and compatible agent harnesses.
 
 - **csc-pouta** — use [Pouta](https://docs.csc.fi/cloud/pouta/), CSC's OpenStack
   IaaS cloud (cPouta, plus ePouta for sensitive data). Generates code/scripts
-  (openstack CLI, openstacksdk, Heat/Terraform) for launching and managing VMs,
+  (openstack CLI, openstacksdk, Heat/Terraform/Ansible) for launching and
+  managing VMs,
   volumes, snapshots, images, networking, security groups and SSH access;
   advises on the mechanics (CSC projects/tenants, flavors, billing & shelving,
   ephemeral vs persistent storage, application credentials, sending mail via the
   `smtp.pouta.csc.fi` relay). Can create
   resources with clear disclosure of cost/exposure, but does not modify or
-  delete existing OpenStack resources on your behalf.
+  delete existing OpenStack resources on your behalf, nor run the IaC it writes.
 
 - **csc-roihu** — use [Roihu](https://docs.csc.fi/computing/systems-roihu/),
   CSC's national supercomputer (successor to Puhti and Mahti). Generates Slurm

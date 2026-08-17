@@ -84,6 +84,14 @@ commands and (b) advise on the mechanics, with the CSC-specific quirks built in.
    never an `oc delete`, project deletion, or bulk teardown on your own
    initiative.
 
+   **A request for manifests is a request for the artifact.** "Write me the
+   YAML / Helm chart / kustomization / a script" means: write the files — the
+   deliverable is the code, not its application to the cluster. (Asking for
+   the *outcome* — "deploy my app" — is different; the tiers above apply.) If
+   the user then asks you to apply what you wrote, classify each object under
+   the tiers: a true create if it doesn't exist yet, a modify (avoid-zone) if
+   it does.
+
 2. **Every Rahti project must carry `csc_project: <number>` in its *description*
    — creation fails without it.** The description is an **accounting field, not a
    human-readable summary**: it must contain that literal line, naming the CSC
@@ -124,8 +132,9 @@ commands and (b) advise on the mechanics, with the CSC-specific quirks built in.
   raw manifests → `oc create -f`), the **CSC project number** to bill (it goes in
   the project description as `csc_project: <number>` — rule 2), and whether it
   should be **public**. Then disclose rough BU/h and (if exposing) the public
-  URL, and either run the create (rule 1 allows it) or generate the manifests
-  from `code-patterns.md`. Expose with `oc expose svc/<name>`; get the URL with
+  URL, and either run the create (rule 1 allows it) or, if the user asked for
+  manifests, generate them from `code-patterns.md` and hand them over without
+  applying them. Expose with `oc expose svc/<name>`; get the URL with
   `oc get route`.
 - **"Make it reachable from the web."** Create a Route (auto DNS+TLS at
   `<name>-<project>.2.rahtiapp.fi`). **Disclose it's public**; offer an IP

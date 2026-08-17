@@ -226,11 +226,16 @@ host: smtp.pouta.csc.fi   port: 25   auth: none   TLS: none
 
 ---
 
-## Heat / Terraform
+## Heat / Terraform / Ansible
 
 For reproducible, tear-down-and-rebuild infrastructure, prefer
 **infrastructure-as-code**: OpenStack **Heat** (`python-heatclient`,
 `openstack stack create -t template.yaml mystack`) is fully supported by the
-Pouta team; **Terraform** via the OpenStack provider is also widely used and
-reads the same `clouds.yaml`. Generate templates rather than imperative
-`server create` calls when the user wants repeatable environments.
+Pouta team; **Terraform** via the OpenStack provider and **Ansible** via the
+`openstack.cloud` collection are also widely used, and both read the same
+`clouds.yaml`. Generate templates/playbooks rather than imperative
+`server create` calls when the user wants repeatable environments — and hand
+them over; the artifact is the deliverable. Executing them (`terraform apply`,
+`stack create/update`, `ansible-playbook`) is avoid-zone — the effect depends
+on existing state — so run only on an explicit ask, after showing the dry-run
+(`terraform plan`, `ansible-playbook --check`).

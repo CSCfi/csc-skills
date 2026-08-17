@@ -75,6 +75,10 @@ cloud VMs `csc-pouta`; for containers-as-a-service `csc-rahti`.
      `rsync`/`rclone` with `--delete`/`sync` semantics. Write a reviewable
      script, state what it destroys, and run only on explicit confirmation.
 
+   "Write me a job script" is a request for the script, not a cue to `sbatch`
+   it — submit only when the user asks for the run, with the cost disclosure
+   above.
+
 4. **Be a good HPC citizen — this includes you, when this session is running
    on Roihu itself.** CSC's usage policy: login nodes are only for compiling,
    managing batch jobs, moving data, and *light* pre/post-processing —

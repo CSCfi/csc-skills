@@ -5,7 +5,9 @@ description: >
   user wants to launch/configure/manage virtual machines, volumes, snapshots,
   images, networks, security groups, floating IPs or SSH access on Pouta, set up
   OpenStack credentials (RC file / application credentials / clouds.yaml), use
-  the openstack CLI or openstacksdk, send email from a VM (the
+  the openstack CLI or openstacksdk, write Heat / Terraform / Ansible
+  automation for Pouta (it writes the IaC; it does not run it), send email from
+  a VM (the
   smtp.pouta.csc.fi SMTP relay, SPF), or asks about Pouta concepts (cPouta vs
   ePouta, CSC projects/tenants, flavors, billing, VM lifecycle/shelving,
   ephemeral vs persistent storage). Covers cPouta (the common case) and answers
@@ -74,6 +76,18 @@ the mechanics, with the CSC-specific quirks built in.
    never a `server delete` / `volume delete` / bulk teardown on your own
    initiative.
 
+   **A request for automation is a request for the artifact.** "Write me
+   Ansible / Terraform / Heat / a script for X" means: write the file — the
+   deliverable is the code, not its execution. (Asking for the *outcome* —
+   "launch a VM" — is different; the tiers above apply.) Executing IaC or
+   config-management tools (`ansible-playbook`, `terraform apply`,
+   `openstack stack create/update`) is never a plain create even when the
+   template only declares new resources: the effect depends on existing state,
+   and configuring software on an existing VM is a modify. If the user
+   explicitly asks you to run one, treat it as avoid-zone — show the dry-run
+   (`terraform plan`, `ansible-playbook --check`) first and run only on
+   confirmation.
+
 2. **A CSC project is the OpenStack tenant — the namespace for everything.** All
    VMs, volumes, networks, floating IPs, images, keypairs and quota belong to
    one project, and **every member of the project has full access** to them
@@ -109,8 +123,9 @@ the mechanics, with the CSC-specific quirks built in.
   and whether to **boot from a volume** (so the root disk persists and the VM
   can be deleted to stop billing cheaply). Then — after stating the flavor, a
   rough BU/h, and which sources reach SSH — either run the `openstack server
-  create` (rule 1 allows creation) or generate the openstacksdk / Heat /
-  Terraform equivalent from `references/code-patterns.md`.
+  create` (rule 1 allows creation) or, if the user asked for code/IaC, generate
+  the openstacksdk / Heat / Terraform / Ansible artifact from
+  `references/code-patterns.md` and hand it over without executing it.
 - **"Give it persistent storage."** Generate volume create + attach, and the
   one-time format/mount steps (with the "only on first use" warning).
 - **"Open port N"** / firewall — generate the security-group rule, and default
