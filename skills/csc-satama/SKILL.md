@@ -58,9 +58,11 @@ quirks built in.
        Upstream docs carry no warning about this, but it belongs in the
        avoid-zone exactly like Rahti's `oc delete`/`oc scale`: state plainly
        what the rule will delete and how often before it's turned on.
-     - Changing a member's role, deleting/re-scoping a robot account, or
-       flipping a project from private to public are **modifications of a
-       live resource** — same treatment.
+     - Changing a member's role, deleting/re-scoping a robot account,
+       **refreshing a robot account's secret** (invalidates the old one —
+       anything still using it breaks immediately), or flipping a project
+       from private to public are **modifications of a live resource** —
+       same treatment.
 
 2. **Project-member permission changes are temporary.** Anyone with project
    access starts as **Project Admin** by default, and admins can change roles
