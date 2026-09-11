@@ -46,6 +46,18 @@ Claude Code, Codex, GitHub Copilot CLI, and compatible agent harnesses.
   of cost (BU) and public exposure, but does not modify or delete existing
   Rahti resources on your behalf.
 
+- **csc-satama** — use [Satama](https://docs.csc.fi/cloud/satama/), CSC's
+  Harbor-based container image registry (`satama.csc.fi`). Generates
+  `docker`/`podman` login, tag, push and pull commands (personal CLI secret
+  or robot accounts), and configuration for project visibility, vulnerability
+  scanning (Trivy), SBOM generation, CVE allowlisting, tag immutability/
+  retention and deployment security (cosign/Notation signing); advises on the
+  mechanics (roles and the periodic permission-sync gotcha, storage billing
+  in Cloud BU/GiBh, quota, known error messages). Can push new image tags and
+  create protective policies with disclosure of cost and public exposure, but
+  treats overwriting a tag, deleting images/tags, and enabling tag-retention
+  auto-deletion as the avoid-zone rather than running them on your behalf.
+
 ## Installing
 
 The canonical skill content lives under `skills/`. The checked-in
