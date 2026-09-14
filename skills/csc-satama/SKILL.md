@@ -55,9 +55,11 @@ quirks built in.
      - **Enabling a tag-retention rule** — unlike immutability, this
        configures Satama to **automatically and repeatedly delete tags** on a
        schedule (e.g. "keep latest 10", "delete tags older than 30 days").
-       Upstream docs carry no warning about this, but it belongs in the
-       avoid-zone exactly like Rahti's `oc delete`/`oc scale`: state plainly
-       what the rule will delete and how often before it's turned on.
+       Upstream itself warns tags removed this way are deleted automatically
+       and permanently with no further confirmation and cannot be recovered —
+       treat it as avoid-zone exactly like Rahti's `oc delete`/`oc scale`:
+       state plainly what the rule will delete and how often before it's
+       turned on.
      - Changing a member's role, deleting/re-scoping a robot account,
        **refreshing a robot account's secret** (invalidates the old one —
        anything still using it breaks immediately), or flipping a project
