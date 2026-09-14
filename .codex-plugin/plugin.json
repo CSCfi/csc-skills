@@ -1,6 +1,6 @@
 {
   "name": "csc-skills",
-  "description": "Skills for using CSC infrastructure (Allas object storage, Pouta cloud, Rahti container cloud, Roihu supercomputer) correctly, safely, and in a streamlined way.",
+  "description": "Skills for using CSC infrastructure (Allas object storage, Pouta cloud, Rahti container cloud, Satama container registry, Roihu supercomputer) correctly, safely, and in a streamlined way.",
   "version": "0.1.0",
   "author": {
     "name": "Sam Hardwick",
