@@ -28,10 +28,6 @@ work on Satama:
 echo "$SATAMA_ROBOT_SECRET" | docker login satama.csc.fi -u 'robot@<project>+<name>' --password-stdin
 ```
 
-`unauthorized` while the web UI still shows you logged in means the CLI
-secret has expired: log out of the web UI, log in again, generate a **new**
-secret, and log in with that. The old secret will not start working again.
-
 ## Push a new tag
 
 ```bash

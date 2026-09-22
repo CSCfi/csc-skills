@@ -55,11 +55,9 @@ what is CSC-specific or where a model's default answer is wrong.
 3. **CLI credentials.** Log in with a personal **CLI secret** (User Profile
    in the web UI) or a **robot account**, never the web UI password. Robot
    usernames are **`robot@<project>+<name>`**, not Harbor's default
-   `robot$<project>+<name>`. Secrets are shown once. If `docker login` or a
-   push returns `unauthorized` **even though the web UI shows you logged
-   in**, the CLI secret has expired: log out of the web UI, log in again,
-   generate a **new** CLI secret, and log in with that. Re-copying the old
-   secret or re-running `docker login` alone does not help.
+   `robot$<project>+<name>`. Secrets are shown once. On `unauthorized`,
+   regenerate the CLI secret (or check the robot account's expiry) and log
+   in again.
 
 4. **No `csc_project:` accounting field, unlike Rahti and Pouta.** A Satama
    project appears once the Satama service is activated for the CSC project
@@ -92,8 +90,8 @@ what is CSC-specific or where a model's default answer is wrong.
 ## Reference material
 
 - `references/concepts.md`: access and roles, billing and quota, CLI
-  credential gotchas, CSC-specific configuration notes, what upstream is
-  silent on, and a troubleshooting table.
+  credentials, CSC-specific configuration notes, what upstream is silent
+  on, and a troubleshooting table.
 - `references/code-patterns.md`: login/tag/push commands for CLI secret and
   robot account, robot-account creation, and the avoid-zone operations as
   reviewable steps.

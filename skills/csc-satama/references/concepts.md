@@ -10,13 +10,12 @@ CSC-specific facts and gotchas are recorded here.
 - Requires a CSC user account, **MFA**, and a CSC project with the **Satama
   service enabled** (apply via
   <https://docs.csc.fi/accounts/how-to-add-service-access-for-project/>).
-  Web UI login is via HAKA, MyCSC or Virtu.
+  Web UI login is via HAKA or MyCSC.
 - First login to `satama.csc.fi` creates the Satama user. Only the
   **`library`** project is visible at first; other enabled CSC projects
   appear after **up to about 15 minutes**. A CSC project shows up in
   Satama's UI as `project_XXXXXX`, where `XXXXXX` is the MyCSC project
-  number, not under its MyCSC name (Satama developers' note; not in the
-  upstream docs).
+  number, not under its MyCSC name.
 - Everyone with access to the CSC project gets **Project Admin** on its
   Satama project by default. Harbor's standard role ladder applies (Limited
   Guest, Guest, Developer, Maintainer, Project Admin; pushing needs Developer
@@ -39,11 +38,6 @@ CSC-specific facts and gotchas are recorded here.
 - **Personal CLI secret**: click your username (top right) → **User Profile**
   → **CLI Secret** → **Generate New Secret**. Use it, never the web UI
   password, for `docker`/`podman login`.
-- **Expired-secret trap.** The web UI can show you logged in while the CLI
-  secret it issued has expired. Symptom: `unauthorized: authentication
-  required` on login or push. Fix: log out of the web UI, log in again,
-  generate a **new** CLI secret, then `docker login satama.csc.fi` with it.
-  Re-copying the old secret or re-running `docker login` alone does not help.
 - **Robot accounts** are named **`robot@<project>+<name>`**. CSC uses `robot@`
   in place of Harbor's default `robot$` prefix, so a username written from
   Harbor habit fails to log in. The secret is displayed once at creation.
@@ -76,7 +70,7 @@ needed). Beyond that:
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| `unauthorized: authentication required`, even though the web UI shows you logged in | Expired CLI secret | Log out of the web UI, log in again, generate a **new** CLI secret, `docker login satama.csc.fi` with it |
+| `unauthorized: authentication required` | Not logged in, or the CLI secret was revoked/regenerated or the robot account expired | Regenerate the CLI secret (or check the robot account's expiry) and `docker login satama.csc.fi` again |
 | `denied: requested access to the resource is denied` on push | Not a project member, or role below Developer | Ask a project admin for Developer or above |
 | Push fails citing a tag policy | A tag-immutability rule matches the tag | Push under a new tag |
 | `repository does not exist` on pull | Wrong project or repository name, or the tag was never pushed | Check the exact reference in the web UI |
