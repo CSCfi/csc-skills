@@ -52,13 +52,37 @@ need root, custom kernels, or VM-level isolation (sensitive data → ePouta).
 |---|---|
 | Virtual cores (CPU) | 4 |
 | RAM | 16 GiB |
-| Storage (PVCs) | 100 GiB |
+| PVC storage | 100 GiB |
+| Ephemeral storage | 5 GiB |
 | Image streams | 20 |
-| Size of each registry image | 5 GiB |
+| Concurrent pods | 100 |
+| PVCs | 20 |
 
-Raise via Service Desk (case-by-case). Inspect live:
-`oc describe AppliedClusterResourceQuotas` and `oc describe limitranges`
-(or web console **Administration → ResourceQuota / LimitRanges**).
+**The CPU/RAM quota counts container *limits*, not requests** (the quota
+resources are `limits.cpu` and `limits.memory`; storage is `requests.storage`).
+This differs from billing, which charges `max(request, usage)`. A default pod
+(100m request, 500m limit) idles at 100m of billing but occupies 500m of quota,
+so only 8 default pods fit in 4 cores. Raising a request up to its limit costs
+BU but no extra quota. Raise quota via Service Desk (case-by-case). Inspect
+live: `oc describe AppliedClusterResourceQuotas` (or web console
+**Administration → ResourceQuota**).
+
+### LimitRange (per Rahti project, applies to single objects)
+
+Separate from the quota: every Rahti project has a LimitRange named `limits`
+that caps individual objects (and sets the limit/request ratio and defaults
+described in the next section); a pod outside these bounds is rejected even
+if the quota has room. Defaults (`oc describe limitranges`, or
+**Administration → LimitRanges**):
+
+| Object | Bound |
+|---|---|
+| Container CPU | 50m – 4 cores |
+| Container memory | 8 MiB – 16 GiB |
+| Single registry image | 5 GiB |
+| Single PVC | 100 GiB |
+
+Adjustable via Service Desk, case-by-case.
 
 ### Per-pod requests/limits
 
@@ -186,7 +210,7 @@ where appropriate
 - **Object storage (Allas)** — Rahti has **no built-in Allas StorageClass**.
   Access Allas from a pod with S3 credentials + `rclone`/SDK (endpoint
   `https://a3s.fi`); see the `csc-allas` skill. Batch many small files into a
-  `tar` for throughput. PVC storage bills at 3.6 BU/TiB·h.
+  `tar` for throughput.
 - High-file-count volumes (>15,000 files) can take **>5 min to mount**.
 
 ## Container registry
@@ -197,9 +221,9 @@ where appropriate
 - Log in with your `oc` token: `docker login -u unused -p $(oc whoami -t) image-registry.apps.2.rahti.csc.fi`.
   For CI, use a **service-account token** (`oc create token <sa>`), not
   `oc sa get-token` (deprecated).
-- Max image size **5 GiB** (the quota's per-image cap); keep images small. If a
-  push 500s on the manifest HEAD, create the ImageStream first
-  (`oc create imagestream <name>`). Image storage is currently **not billed**.
+- Single images are capped by the project LimitRange (see above); keep images
+  small. If a push 500s on the manifest HEAD, create the ImageStream first
+  (`oc create imagestream <name>`).
 
 ## Deploying & building
 

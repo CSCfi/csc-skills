@@ -157,8 +157,9 @@ commands and (b) advise on the mechanics, with the CSC-specific quirks built in.
   user run it.
 - **"What will this cost?"** Use the indicative BU/h rates in `concepts.md`
   (pod cores + RAM + PV storage, billed on the *max* of request and actual
-  usage), but point at the BU calculator (https://my.csc.fi/buc/) for budgeting
-  — rates are reference-only and change (the 2026 rates apply now).
+  usage; the project **quota**, by contrast, counts *limits*), but point at the
+  BU calculator (https://my.csc.fi/buc/) for budgeting — rates are
+  reference-only and change (the 2026 rates apply now).
 
 ## Reference material
 
